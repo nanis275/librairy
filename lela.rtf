@@ -10,4 +10,11 @@
 Format regex Regex ^(?<timestamp>[^,]+), (?<timezone>[^ ]+) (?<level>[^ ]+) \\[(?<module>[^\\]]+)\\] \\((?<details>[^\\)]+)\\) (?<message>.*)$ \
 Time_Key timestamp \
 Time_Format %Y-%m-%d %H:%M:%S \
-Time_Offset +0200}
+Time_Offset +0200}  
+[PARSER]
+    Name        log_parser
+    Format      regex
+    Regex       ^(?<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}),(?<timezone>[+-]\d{4}) (?<level>[A-Z]+) \[(?<component>[^\]]+)\] \((?<task>[^\)]+)\) \[(?<details>[^\]]+)\] \[(?<message>[^\]]*)\]
+    Time_Key    timestamp
+    Time_Format %Y-%m-%d %H:%M:%S
+    Time_Offset +00:00
