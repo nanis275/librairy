@@ -59,3 +59,21 @@ POST /calypso-logs/_doc
 
 2024-07-31 16:15:08,166+0200 INFO [com.calypso.SYSTEM.DefaultJob] (QuartzScheduler_Worker-15) [-J [] | task completed, id-361666, ref-CHECK_REAL_TIME_PRICING_MC_ENTRIES, duration-8129 ms, sla-300000 ms]
 
+
+PUT _ingest/pipeline/grok_pipeline
+{
+  "description": "Pipeline pour parser les logs Calypso",
+  "processors": [
+    {
+      "grok": {
+        "field": "message",
+        "patterns": [
+          "%{TIMESTAMP_ISO8601:timestamp} %{LOGLEVEL:level} \\[%{DATA:component}\\] \\(%{DATA:thread}\\) \\[-J \\[%{DATA:details}\\] \\| task completed, id-%{NUMBER:id}, ref-%{DATA:ref}, duration-%{NUMBER:duration} ms, sla-%{NUMBER:sla} ms\\]"
+        ],
+        "pattern_definitions": {
+          "NUMBER": "[0-9]+"
+        }
+      }
+    }
+  ]
+}
