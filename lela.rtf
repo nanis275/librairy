@@ -195,3 +195,10 @@ PUT /_ingest/pipeline/my_pipeline
   ]
 }
 
+GET /calypsoscheduler_uat_161072.log/_search
+{
+  "_source": ["timestamp", "level", "component", "thread", "details", "message", "ref", "duration", "sla"],
+  "query": {
+    "match_all": {}
+  }
+}
