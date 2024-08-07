@@ -124,3 +124,49 @@ GET /calypsoscheduler_uat_161072.log/_search
 }
 
 
+
+
+
+
+POST /bigdata_bp2s_calypso/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "log": "task completed" }},
+        { "terms": { "id": [101165, 159665, 157677] }}
+      ]
+    }
+  },
+  "script_fields": {
+    "duration_sec": {
+      "script": {
+        "lang": "painless",
+        "source": """
+        String log = doc['log'].value;
+        int start = log.indexOf("duration=") + "duration=".length();
+        int end = log.indexOf(" ms", start);
+        String durationStr = log.substring(start, end);
+        return Integer.parseInt(durationStr) / 1000;
+        """
+      }
+    }
+  },
+  "aggs": {
+    "by_ref": {
+      "terms": {
+        "field": "ref.keyword",
+        "size": 10
+      },
+      "aggs": {
+        "avg_duration_sec": {
+          "avg": {
+            "field": "duration_sec"
+          }
+        }
+      }
+    }
+  },
+  "size": 0
+}
+
