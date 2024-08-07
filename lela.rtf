@@ -98,3 +98,29 @@ POST /_ingest/pipeline/your_pipeline_id/_simulate
     }
   ]
 }
+
+
+
+
+POST /calypsoscheduler_uat_161072.log/_doc?pipeline=my_pipeline
+{
+  "log": "2024-07-31 16:15:08,166+0200 INFO [com.calypso.SYSTEM.DefaultJob] (QuartzScheduler_Worker-15) [-J [] | task completed, id-361666, ref-CHECK_REAL_TIME_PRICING_MC_ENTRIES, duration-8129 ms, sla-300000 ms]"
+}
+
+
+POST /_bulk?pipeline=my_pipeline
+{ "index": { "_index": "calypsoscheduler_uat_161072.log" } }
+{ "log": "2024-07-31 16:15:08,166+0200 INFO [com.calypso.SYSTEM.DefaultJob] (QuartzScheduler_Worker-15) [-J [] | task completed, id-361666, ref-CHECK_REAL_TIME_PRICING_MC_ENTRIES, duration-8129 ms, sla-300000 ms]" }
+{ "index": { "_index": "calypsoscheduler_uat_161072.log" } }
+{ "log": "2024-07-31 16:16:08,166+0200 INFO [com.calypso.SYSTEM.DefaultJob] (QuartzScheduler_Worker-16) [-J [] | task completed, id-361667, ref-OTHER_REF, duration-9000 ms, sla-300000 ms]" }
+
+
+GET /calypsoscheduler_uat_161072.log/_search
+{
+  "_source": ["timestamp", "level", "component", "thread", "details", "message", "ref", "duration", "sla"],
+  "query": {
+    "match_all": {}
+  }
+}
+
+
