@@ -14,3 +14,37 @@
     Time_Key timestamp
     Time_Format %Y-%m-%d %H:%M:%S,%L
     Date_Key timestamp
+
+
+PUT _ingest/pipeline/calypsoscheduler_pipeline
+{
+  "description": "Pipeline to parse Calypso logs",
+  "processors": [
+    {
+      "grok": {
+        "field": "message",
+        "patterns": [
+          "%{TIMESTAMP_ISO8601:timestamp} %{LOGLEVEL:level} \\[%{DATA:component}\\] \\(%{DATA:thread}\\) \\[-J \\[%{DATA:details}\\] \\| task completed, id-%{NUMBER:id}, ref-%{DATA:ref}, duration-%{NUMBER:duration} ms, sla-%{NUMBER:sla} ms\\]"
+        ]
+      }
+    },
+    {
+      "date": {
+        "field": "timestamp",
+        "formats": ["yyyy-MM-dd HH:mm:ss,SSS"]
+      }
+    },
+    {
+      "convert": {
+        "field": "duration",
+        "type": "long"
+      }
+    },
+    {
+      "convert": {
+        "field": "id",
+        "type": "long"
+      }
+    }
+  ]
+}
