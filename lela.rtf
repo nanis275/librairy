@@ -77,3 +77,11 @@ PUT _ingest/pipeline/grok_pipeline
     }
   ]
 }
+
+
+
+
+POST /calypsoscheduler_uat_calypso_161072/_doc?pipeline=grok_pipeline
+{
+  "message": "2024-07-31 16:15:08,166+0200 INFO [com.calypso.SYSTEM.DefaultJob] (QuartzScheduler_Worker-15) [-J [] | task completed, id-361666, ref-CHECK_REAL_TIME_PRICING_MC_ENTRIES, duration-8129 ms, sla-300000 ms]"
+}
