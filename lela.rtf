@@ -1,44 +1,6 @@
-POST /bigdata_bp2s_calypso/_search
-{
-  "query": {
-    "bool": {
-      "must": [
-        { "match": { "source": "/apps/calypso/deploy/SchedulerLogs/Calypsoscheduler_PROD_161072.log" }},
-        { "match": { "taskcompleted": "true" }},
-        { "terms": { "id": [81686, 81688, 273184, 273182, 279170] }}
-      ]
-    }
-  },
-  "script_fields": {
-    "duration_sec": {
-      "script": {
-        "source": """
-          def raw = doc['_source']['_raw'].value;
-          def parts = raw.split('duration=');
-          if (parts.length > 1) {
-            def durationPart = parts[1].split(' ')[0];
-            return Double.parseDouble(durationPart) / 1000;
-          } else {
-            return null;
-          }
-        """
-      }
-    }
-  },
-  "aggs": {
-    "daily_avg_duration": {
-      "date_histogram": {
-        "field": "@timestamp",
-        "calendar_interval": "day"
-      },
-      "aggs": {
-        "avg_duration_sec": {
-          "avg": {
-            "field": "duration_sec"
-          }
-        }
-      }
-    }
-  },
-  "_source": false
-}
+[PARSER]
+    Name   custom_log_parser
+    Format  regex
+    Regex   ^(?<timestamp>[^\s]+ [^\s]+) (?<level>[^\s]+) \[(?<component>[^\]]+)\] \((?<thread>[^\)]+)\) \[-J \[(?<details>[^\]]+)\] \| (?<message>.*) \| ref-(?<ref>[^\s,]+), duration-(?<duration>[0-9]+) ms, .*$
+    Time_Key timestamp
+    Time_Format %Y-%m-%d %H:%M:%S,%L%z
