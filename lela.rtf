@@ -4,3 +4,13 @@
     Regex   ^(?<timestamp>[^\s]+ [^\s]+) (?<level>[^\s]+) \[(?<component>[^\]]+)\] \((?<thread>[^\)]+)\) \[-J \[(?<details>[^\]]+)\] \| (?<message>.*) \| ref-(?<ref>[^\s,]+), duration-(?<duration>[0-9]+) ms, .*$
     Time_Key timestamp
     Time_Format %Y-%m-%d %H:%M:%S,%L%z
+
+
+
+[PARSER]
+    Name   calypso_logs
+    Format regex
+    Regex  (?<timestamp>[^ ]+ [^ ]+) (?<level>[^ ]+) \[(?<component>[^\]]+)\] \((?<thread>[^\)]+)\) \[-J \[(?<details>[^\]]+)\] \| task completed, id-(?<id>[0-9]+), ref-(?<ref>[^\s,]+), duration-(?<duration>[0-9]+) ms, sla-[0-9]+ ms
+    Time_Key timestamp
+    Time_Format %Y-%m-%d %H:%M:%S,%L
+    Date_Key timestamp
