@@ -171,6 +171,17 @@ POST /bigdata_bp2s_calypso/_search
 }
 
 
+[PARSE]
+    Name          multi_line_calypso
+    Format        regex
+    Regex_Firstline  ^(?<time>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}\+\d{4})\s+(?<level>\w+)\s+\|(?<module>[^|]+)\]\s+\((?<task>[^)]+)\)\s+\|(?<ip>[^|]+)\|(?<message>.*)$
+    Regex_Nextline   ^(?!\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}\+\d{4}).*$
+    Time_Key      time
+    Time_Format   %Y-%m-%d %H:%M:%S,%L%z
+    Time_Keep     On
+
+
+
 
 PUT /_ingest/pipeline/my_pipeline
 {
