@@ -5,7 +5,72 @@
     Time_Key timestamp
     Time_Format %Y-%m-%d %H:%M:%S,%L%z
 
+Merci pour la précision. Dans ce cas, la stratégie de parsing pour vos logs multi-lignes doit se baser sur le fait que chaque nouvelle entrée de log commence par une date. Les lignes suivantes (qui ne commencent pas par une date) font partie du message multi-ligne de l'entrée de log précédente.
 
+Voici comment vous pouvez configurer un parser multi-ligne adapté à ce cas avec Fluent Bit :
+
+### 1. Configurer le parser multi-ligne
+
+Nous allons définir un parser qui reconnaît une nouvelle ligne de log lorsqu'elle commence par une date, et qui traite toutes les lignes suivantes comme des continuations de cette log.
+
+```ini
+[PARSE]
+    Name          multi_line_calypso
+    Format        regex
+    Regex_Firstline  ^(?<time>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}\+\d{4})\s+(?<level>\w+)\s+\|(?<module>[^|]+)\]\s+\((?<task>[^)]+)\)\s+\|(?<ip>[^|]+)\|(?<message>.*)$
+    Regex_Nextline   ^(?!\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}\+\d{4}).*$
+    Time_Key      time
+    Time_Format   %Y-%m-%d %H:%M:%S,%L%z
+    Time_Keep     On
+```
+
+### 2. Explication des parties de la configuration :
+
+- **Name** : Le nom du parser que vous utiliserez pour l'input.
+- **Format** : Le format de parsing (ici, `regex`).
+- **Regex_Firstline** : Cette regex détecte la première ligne d'un log, qui commence toujours par une date. Cette regex est la même que précédemment, elle capture les différents éléments comme le temps, le niveau de log, etc.
+- **Regex_Nextline** : Cette regex détecte les lignes qui ne commencent **pas** par une date (c'est-à-dire les lignes qui appartiennent à l'entrée de log précédente).
+  
+  ```regex
+  ^(?!\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}\+\d{4}).*$
+  ```
+  
+  - `^(?!...)` : Ceci est un "negative lookahead". Il s'assure que la ligne ne commence **pas** par le motif à l'intérieur.
+  - `\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}\+\d{4}` : Ceci est le motif qui correspond à une date, comme `2024-08-28 14:17:28,915+0200`.
+  - `.*$` : Capture le reste de la ligne si elle ne commence pas par une date.
+
+### 3. Configurer l'input
+
+Maintenant, vous devez configurer l'input pour utiliser ce parser :
+
+```ini
+[INPUT]
+    Name              tail
+    Path              /var/log/myapp.log
+    Parser            multi_line_calypso
+    Tag               myapp.log
+    DB                /var/log/fluentbit/myapp.db
+    Mem_Buf_Limit     5MB
+    Skip_Long_Lines   On
+    Refresh_Interval  5
+    Multiline         On
+    Multiline.Flush   5
+    Parser_Firstline  multi_line_calypso
+    Parser_Nextline   multi_line_calypso
+```
+
+### 4. Explication des options d'input :
+
+- **Multiline** : Active le support des logs multi-lignes.
+- **Multiline.Flush** : Définit le délai en secondes pour forcer la fin d'une séquence multi-ligne et effectuer un flush.
+- **Parser_Firstline** : Le nom du parser pour la première ligne d'un log multi-ligne (qui commence par une date).
+- **Parser_Nextline** : Le nom du parser pour les lignes suivantes (qui n'ont pas de date).
+
+### 5. Conclusion
+
+Avec cette configuration, Fluent Bit détectera chaque nouvelle entrée de log lorsqu'elle commence par une date, et agrégera toutes les lignes suivantes jusqu'à ce qu'il rencontre une nouvelle date. Cela permet de traiter correctement les logs multi-lignes comme ceux que vous avez fournis.
+
+N'oubliez pas de tester cette configuration et de l'ajuster en fonction de la structure exacte de vos logs et des résultats que vous observez.
 
 [PARSER]
     Name   calypso_logs
