@@ -286,17 +286,6 @@ GET /calypsoscheduler_uat_161072.log/_search
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -406,4 +395,67 @@ GET /calypsoscheduler_uat_161072.log/_search
                 
                 <!-- Description courte -->
                 <h5>{{ result_item.short_description }}</h5>
-                <b><p>{{ result_ite
+                <b><p>{{ result_item.justification }}</p></b>
+                <h5>
+                    <a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ result_item.sys_id }}">
+                        Ticket #{{ result_item.number }}
+                    </a>
+                </h5>
+
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+
+    <!-- Vulcan -->
+    <div class="section-title">Vulcan</div>
+    {% for result_item in result %}
+        {% if "Vulcan" in result_item.short_description %}
+            {% if "15:" in result_item.start_date or "16:" in result_item.start_date or 
+                  "17:" in result_item.start_date or "18:" in result_item.start_date %}
+                
+                <!-- Description courte -->
+                <h5>{{ result_item.short_description }}</h5>
+                <b><p>{{ result_item.justification }}</p></b>
+                <h5>
+                    <a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ result_item.sys_id }}">
+                        Ticket #{{ result_item.number }}
+                    </a>
+                </h5>
+
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+
+    <!-- Autres releases -->
+    <div class="section-title">Other Releases</div>
+    {% for result_item in result %}
+        {% if "Nighthawk" not in result_item.short_description and "BlackBird" not in result_item.short_description and "Vulcan" not in result_item.short_description %}
+            {% if "15:" in result_item.start_date or "16:" in result_item.start_date or 
+                  "17:" in result_item.start_date or "18:" in result_item.start_date %}
+                
+                <!-- Description courte -->
+                <h5>{{ result_item.short_description }}</h5>
+                <b><p>{{ result_item.justification }}</p></b>
+                <h5>
+                    <a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ result_item.sys_id }}">
+                        Ticket #{{ result_item.number }}
+                    </a>
+                </h5>
+
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
