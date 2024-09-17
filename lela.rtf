@@ -278,3 +278,132 @@ GET /calypsoscheduler_uat_161072.log/_search
     "match_all": {}
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Release Information for the EU Platform</title>
+    <style>
+        h3 {
+            color: MediumSeaGreen;
+        }
+        p, h5 {
+            color: black;
+            margin-left: 20px;
+        }
+        a {
+            color: mediumblue;
+        }
+        .section-title {
+            font-weight: bold;
+            color: #000000;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Hi,</h1>
+    <p>Please see below for the details of releases happening on the EU platform today.</p>
+    
+    <!-- Section: Implémenté tôt -->
+    <h3>We implemented them early today:</h3>
+
+    <!-- Nighthawk / BlackBird -->
+    <div class="section-title">Nighthawk / BlackBird</div>
+    {% for result_item in result %}
+        {% if "Nighthawk" in result_item.short_description or "BlackBird" in result_item.short_description %}
+            {% if "08:" in result_item.start_date or "09:" in result_item.start_date or "10:" in result_item.start_date or 
+                  "11:" in result_item.start_date or "12:" in result_item.start_date or "13:" in result_item.start_date or 
+                  "14:" in result_item.start_date %}
+                
+                <!-- Description courte -->
+                <h5>{{ result_item.short_description }}</h5>
+                <b><p>{{ result_item.justification }}</p></b>
+                <h5>
+                    <a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ result_item.sys_id }}">
+                        Ticket #{{ result_item.number }}
+                    </a>
+                </h5>
+
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+
+    <!-- Vulcan -->
+    <div class="section-title">Vulcan</div>
+    {% for result_item in result %}
+        {% if "Vulcan" in result_item.short_description %}
+            {% if "08:" in result_item.start_date or "09:" in result_item.start_date or "10:" in result_item.start_date or 
+                  "11:" in result_item.start_date or "12:" in result_item.start_date or "13:" in result_item.start_date or 
+                  "14:" in result_item.start_date %}
+                
+                <!-- Description courte -->
+                <h5>{{ result_item.short_description }}</h5>
+                <b><p>{{ result_item.justification }}</p></b>
+                <h5>
+                    <a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ result_item.sys_id }}">
+                        Ticket #{{ result_item.number }}
+                    </a>
+                </h5>
+
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+
+    <!-- Autres releases -->
+    <div class="section-title">Other Releases</div>
+    {% for result_item in result %}
+        {% if "Nighthawk" not in result_item.short_description and "BlackBird" not in result_item.short_description and "Vulcan" not in result_item.short_description %}
+            {% if "08:" in result_item.start_date or "09:" in result_item.start_date or "10:" in result_item.start_date or 
+                  "11:" in result_item.start_date or "12:" in result_item.start_date or "13:" in result_item.start_date or 
+                  "14:" in result_item.start_date %}
+                
+                <!-- Description courte -->
+                <h5>{{ result_item.short_description }}</h5>
+                <b><p>{{ result_item.justification }}</p></b>
+                <h5>
+                    <a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ result_item.sys_id }}">
+                        Ticket #{{ result_item.number }}
+                    </a>
+                </h5>
+
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+
+    <!-- Section: Implémenté après 17h30 -->
+    <h3>We will implement on or after 17:30 LON time:</h3>
+
+    <!-- Répéter les sections pour Nighthawk / BlackBird, Vulcan, et autres, pour les releases après 17h30 -->
+    
+    <div class="section-title">Nighthawk / BlackBird</div>
+    {% for result_item in result %}
+        {% if "Nighthawk" in result_item.short_description or "BlackBird" in result_item.short_description %}
+            {% if "15:" in result_item.start_date or "16:" in result_item.start_date or 
+                  "17:" in result_item.start_date or "18:" in result_item.start_date %}
+                
+                <!-- Description courte -->
+                <h5>{{ result_item.short_description }}</h5>
+                <b><p>{{ result_ite
