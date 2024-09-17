@@ -319,15 +319,18 @@ GET /calypsoscheduler_uat_161072.log/_search
 
     <!-- Boucle pour trier et afficher les résultats -->
     {% for result_item in result %}
-        {% if "08:" in result_item.start_date or "09:" in result_item.start_date or 
-              "10:" in result_item.start_date or "11:" in result_item.start_date or 
-              "12:" in result_item.start_date or "13:" in result_item.start_date or 
+        {% if "08:" in result_item.start_date or 
+              "09:" in result_item.start_date or 
+              "10:" in result_item.start_date or 
+              "11:" in result_item.start_date or 
+              "12:" in result_item.start_date or 
+              "13:" in result_item.start_date or 
               "14:" in result_item.start_date %}
             
             {% if result_item.state_display != "Canceled" %}
-                <!-- Trier les données -->
+                
+                <!-- Section Nighthawk / BlackBird -->
                 {% if "Nighthawk" in result_item.short_description or "BlackBird" in result_item.short_description %}
-                    <!-- Section Nighthawk / BlackBird -->
                     <h3>Nighthawk / BlackBird</h3>
                     <h5>{{ result_item.short_description }}</h5>
                     <p><strong>Justification:</strong> {{ result_item.justification }}</p>
@@ -337,8 +340,9 @@ GET /calypsoscheduler_uat_161072.log/_search
                             Ticket #{{ result_item.number }}
                         </a>
                     </p>
+                
+                <!-- Section Vulcan -->
                 {% elif "Vulcan" in result_item.short_description %}
-                    <!-- Section Vulcan -->
                     <h3>Vulcan</h3>
                     <h5>{{ result_item.short_description }}</h5>
                     <p><strong>Justification:</strong> {{ result_item.justification }}</p>
@@ -348,8 +352,9 @@ GET /calypsoscheduler_uat_161072.log/_search
                             Ticket #{{ result_item.number }}
                         </a>
                     </p>
+                
+                <!-- Section Autres releases -->
                 {% else %}
-                    <!-- Section Autres releases -->
                     <h3>Other Releases</h3>
                     <h5>{{ result_item.short_description }}</h5>
                     <p><strong>Justification:</strong> {{ result_item.justification }}</p>
@@ -360,10 +365,13 @@ GET /calypsoscheduler_uat_161072.log/_search
                         </a>
                     </p>
                 {% endif %}
+            
             {% endif %}
+        
         {% endif %}
     {% endfor %}
 
 </body>
 </html>
+
 
