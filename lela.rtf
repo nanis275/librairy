@@ -1,3 +1,53 @@
+SELECT *
+FROM servicenow.change_request
+WHERE 
+(
+    UPPER(assignment_group_display) LIKE UPPER('%BNPP_CIB_UK.GM ES ICET TS SDM%') 
+    OR UPPER(assignment_group_display) LIKE UPPER('%BNPP_CIB_UK.GM ES ICET AP SDM%')
+)
+AND 
+(
+    UPPER(cmdb_ci_display) LIKE UPPER('%NIGHTHAWK%') 
+    OR UPPER(cmdb_ci_display) LIKE UPPER('%BLACKBIRD%') 
+    OR UPPER(cmdb_ci_display) LIKE UPPER('%FORWARD PRICER%') 
+    OR UPPER(cmdb_ci_display) LIKE UPPER('%VULCAN%')
+)
+AND 
+(
+    UPPER(cmdb_ci_display) NOT LIKE UPPER('%LYNX%') 
+    AND UPPER(cmdb_ci_display) NOT LIKE UPPER('%CREDIT%')
+    AND UPPER(cmdb_ci_display) NOT LIKE UPPER('%JAG%') 
+    AND UPPER(cmdb_ci_display) NOT LIKE UPPER('%QUARTZC%') 
+    AND UPPER(cmdb_ci_display) NOT LIKE UPPER('%CRDION%') 
+    AND UPPER(cmdb_ci_display) NOT LIKE UPPER('%OMEGA%')
+)
+AND 
+(
+    (start_date IS NOT NULL AND start_date >= '2024-09-16 08:00:00')
+    OR (work_start IS NOT NULL AND work_start >= '2024-09-16 08:00:00')
+    OR (work_end IS NOT NULL AND work_end >= '2024-09-16 08:00:00')
+)
+AND 
+(
+    (start_date IS NOT NULL AND start_date <= '2024-09-16 11:00:00')
+    OR (end_date IS NOT NULL AND end_date <= '2024-09-16 11:00:00')
+    OR (closed_at IS NOT NULL AND closed_at <= '2024-09-16 11:00:00')
+)
+-- Limite des résultats
+LIMIT 50;
+
+
+
+
+
+
+
+
+
+
+
+
+
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Release Information</title><style>body {font-family: Arial, sans-serif; font-size: 11px;} h3 {color: MediumSeaGreen;} p, h5 {color: black; margin-left: 20px;} a {color: mediumblue; text-decoration: none;} </style></head><body><h1>Hi,</h1><p>Please see below for the details of releases happening on the EU platform today.</p><h3 style="color:MediumSeaGreen;">We implemented them early today:</h3>{% for result_item in result %}{% if "08:" in result_item.start_date or "09:" in result_item.start_date or "10:" in result_item.start_date or "11:" in result_item.start_date or "12:" in result_item.start_date or "13:" in result_item.start_date or "14:" in result_item.start_date %}{% if result_item.state_display != "Canceled" %}{% if "Nighthawk" in result_item.short_description %}<h3>Nighthawk Releases</h3><h5>{{ result_item.short_description }}</h5><p><a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ result_item.sys_id }}">Ticket #{{ result_item.number }}</a></p>{% elif "Vulcan" in result_item.short_description %}<h3>Vulcan Releases</h3><h5>{{ result_item.short_description }}</h5><p><a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ result_item.sys_id }}">Ticket #{{ result_item.number }}</a></p>{% else %}<h3>Other Releases</h3><h5>{{ result_item.short_description }}</h5><p><a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ result_item.sys_id }}">Ticket #{{ result_item.number }}</a></p>{% endif %}{% endif %}{% endif %}{% endfor %}<h3 style="color:MediumSeaGreen;">We will implement on or after 17:30 LON time:</h3>{% for result_item in result %}{% if "15:" in result_item.start_date or "16:" in result_item.start_date or "17:" in result_item.start_date or "18:" in result_item.start_date %}{% if result_item.state_display != "Canceled" %}{% if "Nighthawk" in result_item.short_description %}<h3>Nighthawk Releases</h3><h5>{{ result_item.short_description }}</h5><p><a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ result_item.sys_id }}">Ticket #{{ result_item.number }}</a></p>{% elif "Vulcan" in result_item.short_description %}<h3>Vulcan Releases</h3><h5>{{ result_item.short_description }}</h5><p><a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ result_item.sys_id }}">Ticket #{{ result_item.number }}</a></p>{% else %}<h3>Other Releases</h3><h5>{{ result_item.short_description }}</h5><p><a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ result_item.sys_id }}">Ticket #{{ result_item.number }}</a></p>{% endif %}{% endif %}{% endif %}{% endfor %}</body></html>
 
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Release Information</title><style>body {font-family: Arial, sans-serif; font-size: 11px;} h3 {color: MediumSeaGreen;} p, h5 {color: black; margin-left: 20px;} a {color: mediumblue; text-decoration: none;} </style></head><body><h1>Hi,</h1><p>Please see below for the details of releases happening on the EU platform today.</p><h3 style="color:MediumSeaGreen;">We implemented them early today:</h3>{% set nighthawk_releases = [] %}{% set vulcan_releases = [] %}{% set other_releases = [] %}{% for result_item in result %}{% if "08:" in result_item.start_date or "09:" in result_item.start_date or "10:" in result_item.start_date or "11:" in result_item.start_date or "12:" in result_item.start_date or "13:" in result_item.start_date or "14:" in result_item.start_date %}{% if result_item.state_display != "Canceled" %}{% if "Nighthawk" in result_item.short_description %}{% set nighthawk_releases = nighthawk_releases.append(result_item) %}{% elif "Vulcan" in result_item.short_description %}{% set vulcan_releases = vulcan_releases.append(result_item) %}{% else %}{% set other_releases = other_releases.append(result_item) %}{% endif %}{% endif %}{% endif %}{% endfor %}{% if nighthawk_releases %}<h3>Nighthawk Releases</h3>{% for release in nighthawk_releases %}<h5>{{ release.short_description }}</h5><p><a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ release.sys_id }}">Ticket #{{ release.number }}</a></p>{% endfor %}{% endif %}{% if vulcan_releases %}<h3>Vulcan Releases</h3>{% for release in vulcan_releases %}<h5>{{ release.short_description }}</h5><p><a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ release.sys_id }}">Ticket #{{ release.number }}</a></p>{% endfor %}{% endif %}{% if other_releases %}<h3>Other Releases</h3>{% for release in other_releases %}<h5>{{ release.short_description }}</h5><p><a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ release.sys_id }}">Ticket #{{ release.number }}</a></p>{% endfor %}{% endif %}<h3 style="color:MediumSeaGreen;">We will implement on or after 17:30 LON time:</h3>{% set nighthawk_releases = [] %}{% set vulcan_releases = [] %}{% set other_releases = [] %}{% for result_item in result %}{% if "15:" in result_item.start_date or "16:" in result_item.start_date or "17:" in result_item.start_date or "18:" in result_item.start_date %}{% if result_item.state_display != "Canceled" %}{% if "Nighthawk" in result_item.short_description %}{% set nighthawk_releases = nighthawk_releases.append(result_item) %}{% elif "Vulcan" in result_item.short_description %}{% set vulcan_releases = vulcan_releases.append(result_item) %}{% else %}{% set other_releases = other_releases.append(result_item) %}{% endif %}{% endif %}{% endif %}{% endfor %}{% if nighthawk_releases %}<h3>Nighthawk Releases</h3>{% for release in nighthawk_releases %}<h5>{{ release.short_description }}</h5><p><a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ release.sys_id }}">Ticket #{{ release.number }}</a></p>{% endfor %}{% endif %}{% if vulcan_releases %}<h3>Vulcan Releases</h3>{% for release in vulcan_releases %}<h5>{{ release.short_description }}</h5><p><a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ release.sys_id }}">Ticket #{{ release.number }}</a></p>{% endfor %}{% endif %}{% if other_releases %}<h3>Other Releases</h3>{% for release in other_releases %}<h5>{{ release.short_description }}</h5><p><a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ release.sys_id }}">Ticket #{{ release.number }}</a></p>{% endfor %}{% endif %}</body></html>
