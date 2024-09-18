@@ -1,47 +1,39 @@
 SELECT *
 FROM servicenow.change_request
 WHERE 
-(
-    UPPER(assignment_group_display) LIKE UPPER('%BNPP_CIB_UK.GM ES ICET TS SDM%') 
-    OR UPPER(assignment_group_display) LIKE UPPER('%BNPP_CIB_UK.GM ES ICET AP SDM%')
-)
-AND 
-(
-    UPPER(cmdb_ci_display) LIKE UPPER('%NIGHTHAWK%') 
-    OR UPPER(cmdb_ci_display) LIKE UPPER('%BLACKBIRD%') 
-    OR UPPER(cmdb_ci_display) LIKE UPPER('%FORWARD PRICER%') 
-    OR UPPER(cmdb_ci_display) LIKE UPPER('%VULCAN%')
-)
-AND 
-(
-    UPPER(cmdb_ci_display) NOT LIKE UPPER('%LYNX%') 
-    AND UPPER(cmdb_ci_display) NOT LIKE UPPER('%CREDIT%')
-    AND UPPER(cmdb_ci_display) NOT LIKE UPPER('%JAG%') 
-    AND UPPER(cmdb_ci_display) NOT LIKE UPPER('%QUARTZC%') 
-    AND UPPER(cmdb_ci_display) NOT LIKE UPPER('%CRDION%') 
-    AND UPPER(cmdb_ci_display) NOT LIKE UPPER('%OMEGA%')
-)
-AND 
-(
-    (start_date IS NOT NULL AND start_date >= '2024-09-16 08:00:00')
-    OR (work_start IS NOT NULL AND work_start >= '2024-09-16 08:00:00')
-    OR (work_end IS NOT NULL AND work_end >= '2024-09-16 08:00:00')
-)
-AND 
-(
-    (start_date IS NOT NULL AND start_date <= '2024-09-16 11:00:00')
-    OR (end_date IS NOT NULL AND end_date <= '2024-09-16 11:00:00')
-    OR (closed_at IS NOT NULL AND closed_at <= '2024-09-16 11:00:00')
-)
--- Limite des résultats
+    (
+        UPPER(assignment_group_display) LIKE UPPER('%BNPP_CIB_UK.GM ES ICET TS SDM%') 
+        OR UPPER(assignment_group_display) LIKE UPPER('%BNPP_CIB_UK.GM ES ICET AP SDM%')
+    )
+    AND 
+    (
+        UPPER(cmdb_ci_display) LIKE UPPER('%NIGHTHAWK%') 
+        OR UPPER(cmdb_ci_display) LIKE UPPER('%BLACKBIRD%') 
+        OR UPPER(cmdb_ci_display) LIKE UPPER('%FORWARD PRICER%') 
+        OR UPPER(cmdb_ci_display) LIKE UPPER('%VULCAN%')
+    )
+    AND 
+    (
+        UPPER(cmdb_ci_display) NOT LIKE UPPER('%LYNX%') 
+        AND UPPER(cmdb_ci_display) NOT LIKE UPPER('%CREDIT%')
+        AND UPPER(cmdb_ci_display) NOT LIKE UPPER('%JAG%') 
+        AND UPPER(cmdb_ci_display) NOT LIKE UPPER('%QUARTZC%') 
+        AND UPPER(cmdb_ci_display) NOT LIKE UPPER('%CRDION%') 
+        AND UPPER(cmdb_ci_display) NOT LIKE UPPER('%OMEGA%')
+    )
+    AND 
+    (
+        (start_date IS NOT NULL AND start_date >= '2024-09-16 08:00:00')
+        OR (work_start IS NOT NULL AND work_start >= '2024-09-16 08:00:00')
+        OR (work_end IS NOT NULL AND work_end >= '2024-09-16 08:00:00')
+    )
+    AND 
+    (
+        (start_date IS NOT NULL AND start_date <= '2024-09-16 11:00:00')
+        OR (end_date IS NOT NULL AND end_date <= '2024-09-16 11:00:00')
+        OR (closed_at IS NOT NULL AND closed_at <= '2024-09-16 11:00:00')
+    )
 LIMIT 50;
-
-
-
-
-
-
-
 
 
 
