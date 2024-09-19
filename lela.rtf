@@ -16,6 +16,90 @@
     <p>Please see below for the details of releases happening on the EU platform today.</p>
 
     <h3>Releases Implemented Before 17:30</h3>
+    
+    <h4>Nighthawk and BlackBird Releases</h4>
+    {% for result_item in result %}
+        {% if ("Nighthawk" in result_item.short_description or "BlackBird" in result_item.short_description) %}
+            {% if result_item.closed_at < '2024-09-16 17:30:00' %}
+                <h5>{{ result_item.short_description }}</h5>
+                <p><a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ result_item.sys_id }}">Ticket #{{ result_item.number }}</a></p>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+
+    <h4>Vulcan Releases</h4>
+    {% for result_item in result %}
+        {% if "Vulcan" in result_item.short_description %}
+            {% if result_item.closed_at < '2024-09-16 17:30:00' %}
+                <h5>{{ result_item.short_description }}</h5>
+                <p><a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ result_item.sys_id }}">Ticket #{{ result_item.number }}</a></p>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+
+    <h4>Other Releases</h4>
+    {% for result_item in result %}
+        {% if ("Nighthawk" not in result_item.short_description and "BlackBird" not in result_item.short_description and "Vulcan" not in result_item.short_description) %}
+            {% if result_item.closed_at < '2024-09-16 17:30:00' %}
+                <h5>{{ result_item.short_description }}</h5>
+                <p><a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ result_item.sys_id }}">Ticket #{{ result_item.number }}</a></p>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+
+    <h3>Releases Implemented After 17:30</h3>
+    
+    <h4>Nighthawk and BlackBird Releases</h4>
+    {% for result_item in result %}
+        {% if ("Nighthawk" in result_item.short_description or "BlackBird" in result_item.short_description) %}
+            {% if result_item.closed_at >= '2024-09-16 17:30:00' %}
+                <h5>{{ result_item.short_description }}</h5>
+                <p><a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ result_item.sys_id }}">Ticket #{{ result_item.number }}</a></p>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+
+    <h4>Vulcan Releases</h4>
+    {% for result_item in result %}
+        {% if "Vulcan" in result_item.short_description %}
+            {% if result_item.closed_at >= '2024-09-16 17:30:00' %}
+                <h5>{{ result_item.short_description }}</h5>
+                <p><a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ result_item.sys_id }}">Ticket #{{ result_item.number }}</a></p>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+
+    <h4>Other Releases</h4>
+    {% for result_item in result %}
+        {% if ("Nighthawk" not in result_item.short_description and "BlackBird" not in result_item.short_description and "Vulcan" not in result_item.short_description) %}
+            {% if result_item.closed_at >= '2024-09-16 17:30:00' %}
+                <h5>{{ result_item.short_description }}</h5>
+                <p><a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ result_item.sys_id }}">Ticket #{{ result_item.number }}</a></p>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+</body>
+</html>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Release Information</title>
+    <style>
+        body {font-family: Arial, sans-serif; font-size: 11px;}
+        h3 {color: MediumSeaGreen;}
+        p, h5 {color: black; margin-left: 20px;}
+        a {color: mediumblue; text-decoration: none;}
+    </style>
+</head>
+<body>
+    <h1>Hi,</h1>
+    <p>Please see below for the details of releases happening on the EU platform today.</p>
+
+    <h3>Releases Implemented Before 17:30</h3>
     <h4>Nighthawk and BlackBird Releases</h4>
     {% for result_item in result %}
         {% if ("Nighthawk" in result_item.short_description or "BlackBird" in result_item.short_description) and result_item.closed_at and result_item.closed_at < '2024-09-16 17:30:00' %}
