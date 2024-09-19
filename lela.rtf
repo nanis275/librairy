@@ -666,3 +666,69 @@ GET /calypsoscheduler_uat_161072.log/_search
 </html>
 
 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Release Information</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+        }
+        h3 {
+            color: MediumSeaGreen;
+        }
+        p, h5 {
+            color: black;
+            margin-left: 20px;
+        }
+        a {
+            color: mediumblue;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Hi,</h1>
+    <p>Please see below for the details of releases happening on the EU platform today.</p>
+
+    <!-- Section for Nighthawk Releases -->
+    <h3>Nighthawk Releases</h3>
+    {% for result_item in result %}
+    {% if "Nighthawk" in result_item.short_description %}
+        <h5>{{ result_item.short_description }}</h5>
+        <p><strong>Justification:</strong> {{ result_item.justification }}</p>
+        <p><strong>Plan d'implémentation:</strong> {{ result_item.implementation_plan }}</p>
+        <p><a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ result_item.sys_id }}">Ticket #{{ result_item.number }}</a></p>
+    {% endif %}
+    {% endfor %}
+
+    <!-- Section for Vulcan Releases -->
+    <h3>Vulcan Releases</h3>
+    {% for result_item in result %}
+    {% if "Vulcan" in result_item.short_description %}
+        <h5>{{ result_item.short_description }}</h5>
+        <p><strong>Justification:</strong> {{ result_item.justification }}</p>
+        <p><strong>Plan d'implémentation:</strong> {{ result_item.implementation_plan }}</p>
+        <p><a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ result_item.sys_id }}">Ticket #{{ result_item.number }}</a></p>
+    {% endif %}
+    {% endfor %}
+
+    <!-- Section for Other Releases -->
+    <h3>Other Releases</h3>
+    {% for result_item in result %}
+    {% if "Nighthawk" not in result_item.short_description and "Vulcan" not in result_item.short_description %}
+        <h5>{{ result_item.short_description }}</h5>
+        <p><strong>Justification:</strong> {{ result_item.justification }}</p>
+        <p><strong>Plan d'implémentation:</strong> {{ result_item.implementation_plan }}</p>
+        <p><a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ result_item.sys_id }}">Ticket #{{ result_item.number }}</a></p>
+    {% endif %}
+    {% endfor %}
+</body>
+</html>
+
+
+
