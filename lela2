@@ -46,35 +46,28 @@
 
     <!-- Section for releases implemented on or after 17:30 -->
     <h3 style="color:MediumSeaGreen;">We will implement on or after 17:30 LDN time:</h3>
-    {% set has_nighthawk_blackbird = False %}
-    {% set has_vulcan = False %}
-    {% set has_other_releases = False %}
-
     {% for result_item in result %}
         {% if "15:" in result_item.start_date or "16:" in result_item.start_date or "17:" in result_item.start_date or "18:" in result_item.start_date %}
             {% if result_item.state_display != "Canceled" %}
                 {% if "Nighthawk" in result_item.short_description or "BlackBird" in result_item.short_description %}
-                    {% if not has_nighthawk_blackbird %}
+                    {% if loop.first %}
                         <h3>Nighthawk and BlackBird Releases</h3>
-                        {% set has_nighthawk_blackbird = True %}
                     {% endif %}
                     <h5>{{ result_item.short_description }}</h5>
                     <p><strong>Justification:</strong> {{ result_item.justification }}</p>
                     <p><a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ result_item.sys_id }}">Ticket #{{ result_item.number }}</a></p>
                     <br><br>
                 {% elif "Vulcan" in result_item.short_description %}
-                    {% if not has_vulcan %}
+                    {% if loop.first %}
                         <h3>Vulcan Releases</h3>
-                        {% set has_vulcan = True %}
                     {% endif %}
                     <h5>{{ result_item.short_description }}</h5>
                     <p><strong>Justification:</strong> {{ result_item.justification }}</p>
                     <p><a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ result_item.sys_id }}">Ticket #{{ result_item.number }}</a></p>
                     <br><br>
                 {% else %}
-                    {% if not has_other_releases %}
+                    {% if loop.first %}
                         <h3>Other Releases</h3>
-                        {% set has_other_releases = True %}
                     {% endif %}
                     <h5>{{ result_item.short_description }}</h5>
                     <p><strong>Justification:</strong> {{ result_item.justification }}</p>
