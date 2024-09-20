@@ -28,6 +28,98 @@
 
     <!-- Section for releases implemented early today -->
     <h3 style="color:MediumSeaGreen;">We implemented them early today:</h3>
+    {% set early_releases_found = false %}
+    {% for result_item in result %}
+        {% if "08:" in result_item.start_date or "09:" in result_item.start_date or "10:" in result_item.start_date or "11:" in result_item.start_date or "12:" in result_item.start_date or "13:" in result_item.start_date or "14:" in result_item.start_date %}
+            {% if result_item.state_display != "Canceled" %}
+                {% if "Nighthawk" in result_item.short_description or "BlackBird" in result_item.short_description %}
+                    {% if not early_releases_found %}
+                        <h3>Nighthawk and BlackBird Releases</h3>
+                        {% set early_releases_found = true %}
+                    {% endif %}
+                {% elif "Vulcan" in result_item.short_description %}
+                    {% if not early_releases_found %}
+                        <h3>Vulcan Releases</h3>
+                        {% set early_releases_found = true %}
+                    {% endif %}
+                {% endif %}
+                <h5>{{ result_item.short_description }}</h5>
+                <p><strong>Justification:</strong> {{ result_item.justification }}</p>
+                <p><a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ result_item.sys_id }}">Ticket #{{ result_item.number }}</a></p>
+                <br><br>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+    {% if not early_releases_found %}
+        <p>No releases for Nighthawk, BlackBird, or Vulcan implemented early today.</p>
+    {% endif %}
+
+    <!-- Section for releases implemented on or after 17:30 -->
+    <h3 style="color:MediumSeaGreen;">We will implement on or after 17:30 LDN time:</h3>
+    {% set late_releases_found = false %}
+    {% for result_item in result %}
+        {% if "15:" in result_item.start_date or "16:" in result_item.start_date or "17:" in result_item.start_date or "18:" in result_item.start_date %}
+            {% if result_item.state_display != "Canceled" %}
+                {% if "Nighthawk" in result_item.short_description or "BlackBird" in result_item.short_description %}
+                    {% if not late_releases_found %}
+                        <h3>Nighthawk and BlackBird Releases</h3>
+                        {% set late_releases_found = true %}
+                    {% endif %}
+                {% elif "Vulcan" in result_item.short_description %}
+                    {% if not late_releases_found %}
+                        <h3>Vulcan Releases</h3>
+                        {% set late_releases_found = true %}
+                    {% endif %}
+                {% endif %}
+                <h5>{{ result_item.short_description }}</h5>
+                <p><strong>Justification:</strong> {{ result_item.justification }}</p>
+                <p><a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ result_item.sys_id }}">Ticket #{{ result_item.number }}</a></p>
+                <br><br>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+    {% if not late_releases_found %}
+        <p>No releases for Nighthawk, BlackBird, or Vulcan scheduled for implementation after 17:30 LDN time.</p>
+    {% endif %}
+</body>
+</html>
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Release Information</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+        }
+        h3 {
+            color: MediumSeaGreen;
+        }
+        p, h5 {
+            color: black;
+            margin-left: 20px;
+        }
+        a {
+            color: mediumblue;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Hi,</h1>
+    <p>Please see below for the details of releases happening on the EU platform today.</p>
+
+    <!-- Section for releases implemented early today -->
+    <h3 style="color:MediumSeaGreen;">We implemented them early today:</h3>
     {% set first_nighthawk = true %}
     {% set first_blackbird = true %}
     {% set first_vulcan = true %}
