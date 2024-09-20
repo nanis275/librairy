@@ -10,7 +10,7 @@
             font-size: 11px;
         }
         h1 {
-            font-size: 14px; /* Réduit la taille du texte pour "Hi" */
+            font-size: 18px; /* Adjusted size for "Hi" */
         }
         h3 {
             color: MediumSeaGreen;
@@ -18,9 +18,6 @@
         p, h5 {
             color: black;
             margin-left: 20px;
-        }
-        p {
-            font-size: 14px; /* Augmente la taille du texte pour l'introduction */
         }
         a {
             color: mediumblue;
@@ -30,17 +27,14 @@
 </head>
 <body>
     <h1>Hi,</h1>
-    <p>Please see below for the details of releases happening on the EU platform today.</p>
+    <p style="font-size: 14px;">Please see below for the details of releases happening on the EU platform today.</p>
 
     <!-- Section for releases implemented early today -->
     <h3 style="color:MediumSeaGreen;">We implemented them early today:</h3>
     {% for result_item in result %}
         {% if "08:" in result_item.start_date or "09:" in result_item.start_date or "10:" in result_item.start_date or "11:" in result_item.start_date or "12:" in result_item.start_date or "13:" in result_item.start_date or "14:" in result_item.start_date %}
             {% if result_item.state_display != "Canceled" %}
-                {% if "Vulcan" in result_item.short_description %}
-                    {% if loop.first %}
-                        <h3>Vulcan Releases</h3>
-                    {% endif %}
+                {% if "Nighthawk" not in result_item.short_description and "BlackBird" not in result_item.short_description and "Vulcan" not in result_item.short_description %}
                     <h5>{{ result_item.short_description }}</h5>
                     <p><strong>Justification:</strong> {{ result_item.justification }}</p>
                     <p><a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ result_item.sys_id }}">Ticket #{{ result_item.number }}</a></p>
@@ -49,9 +43,6 @@
             {% endif %}
         {% endif %}
     {% endfor %}
-    {% if not any("Vulcan" in result_item.short_description for result_item in result if "08:" in result_item.start_date or "09:" in result_item.start_date or "10:" in result_item.start_date or "11:" in result_item.start_date or "12:" in result_item.start_date or "13:" in result_item.start_date or "14:" in result_item.start_date and result_item.state_display != "Canceled") %}
-        <p>No Vulcan releases implemented early today.</p>
-    {% endif %}
 
     <!-- Section for releases implemented on or after 17:30 -->
     <h3 style="color:MediumSeaGreen;">We will implement on or after 17:30 LDN time:</h3>
@@ -59,7 +50,7 @@
         {% if "15:" in result_item.start_date or "16:" in result_item.start_date or "17:" in result_item.start_date or "18:" in result_item.start_date %}
             {% if result_item.state_display != "Canceled" %}
                 {% if "Nighthawk" in result_item.short_description or "BlackBird" in result_item.short_description %}
-                    {% if loop.first %}
+                    {% if not loop.first %}
                         <h3>Nighthawk and BlackBird Releases</h3>
                     {% endif %}
                     <h5>{{ result_item.short_description }}</h5>
@@ -67,7 +58,7 @@
                     <p><a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ result_item.sys_id }}">Ticket #{{ result_item.number }}</a></p>
                     <br><br>
                 {% elif "Vulcan" in result_item.short_description %}
-                    {% if loop.first %}
+                    {% if not loop.first %}
                         <h3>Vulcan Releases</h3>
                     {% endif %}
                     <h5>{{ result_item.short_description }}</h5>
@@ -78,8 +69,5 @@
             {% endif %}
         {% endif %}
     {% endfor %}
-    {% if not any("Nighthawk" in result_item.short_description or "BlackBird" in result_item.short_description or "Vulcan" in result_item.short_description for result_item in result if "15:" in result_item.start_date or "16:" in result_item.start_date or "17:" in result_item.start_date or "18:" in result_item.start_date and result_item.state_display != "Canceled") %}
-        <p>No releases for Nighthawk, BlackBird, or Vulcan scheduled for implementation after 17:30 LDN time.</p>
-    {% endif %}
 </body>
 </html>
