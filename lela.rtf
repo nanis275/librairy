@@ -29,6 +29,88 @@
     <!-- Section for Nighthawk and BlackBird Releases -->
     <h3>Nighthawk and BlackBird Releases</h3>
     {% for result_item in result %}
+    {% if ("Nighthawk" in result_item.short_description or "BlackBird" in result_item.short_description) and 
+          result_item.state_display != "Canceled" %}
+        <h5>{{ result_item.short_description }}</h5>
+        <p><strong>Justification:</strong> {{ result_item.justification }}</p>
+        <p><a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ result_item.sys_id }}">Ticket #{{ result_item.number }}</a></p>
+        <br><br>
+    {% endif %}
+    {% endfor %}
+
+    <!-- Section for Vulcan Releases -->
+    <h3>Vulcan Releases</h3>
+    {% for result_item in result %}
+    {% if "Vulcan" in result_item.short_description and 
+          result_item.state_display != "Canceled" %}
+        <h5>{{ result_item.short_description }}</h5>
+        <p><strong>Justification:</strong> {{ result_item.justification }}</p>
+        <p><a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ result_item.sys_id }}">Ticket #{{ result_item.number }}</a></p>
+        <br><br>
+    {% endif %}
+    {% endfor %}
+
+    <!-- Section for Releases Implemented After 17:30 -->
+    <h3>We Will Implemented on or After 17:30 LDN Time</h3>
+    {% for result_item in result %}
+    {% if (result_item.start_date | slice(11, 2) in ["15", "16", "17", "18"]) and 
+          result_item.state_display != "Canceled" %}
+        <h5>{{ result_item.short_description }}</h5>
+        <p><strong>Justification:</strong> {{ result_item.justification }}</p>
+        <p><a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ result_item.sys_id }}">Ticket #{{ result_item.number }}</a></p>
+        <br><br>
+    {% endif %}
+    {% endfor %}
+
+    <!-- Section for Other Releases -->
+    <h3>Other Releases</h3>
+    {% for result_item in result %}
+    {% if ("Nighthawk" not in result_item.short_description and "Vulcan" not in result_item.short_description and "BlackBird" not in result_item.short_description) and 
+          (result_item.start_date | slice(11, 2) not in ["15", "16", "17", "18"]) and 
+          result_item.state_display != "Canceled" %}
+        <h5>{{ result_item.short_description }}</h5>
+        <p><strong>Justification:</strong> {{ result_item.justification }}</p>
+        <p><a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ result_item.sys_id }}">Ticket #{{ result_item.number }}</a></p>
+        <br><br>
+    {% endif %}
+    {% endfor %}
+</body>
+</html>
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Release Information</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+        }
+        h3 {
+            color: MediumSeaGreen;
+        }
+        p, h5 {
+            color: black;
+            margin-left: 20px;
+        }
+        a {
+            color: mediumblue;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Hi,</h1>
+    <p>Please see below for the details of releases happening on the EU platform today.</p>
+
+    <!-- Section for Nighthawk and BlackBird Releases -->
+    <h3>Nighthawk and BlackBird Releases</h3>
+    {% for result_item in result %}
     {% if "Nighthawk" in result_item.short_description or "BlackBird" in result_item.short_description %}
         <h5>{{ result_item.short_description }}</h5>
         <p><strong>Justification:</strong> {{ result_item.justification }}</p>
