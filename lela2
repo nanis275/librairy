@@ -837,3 +837,86 @@
 
 
 
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Release Information</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            margin: 0;
+        }
+        h1, h3 {
+            color: MediumSeaGreen;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        table {
+            border: 1px solid black;
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+    <h1>Release Notes for Today</h1>
+
+    <h3>Releases</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Number</th>
+                <th>Status</th>
+                <th>Short Description</th>
+                <th>Implementation</th>
+                <th>Rollback</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for release in releases %}
+                {% if release.state_display != "Canceled" and release.risk_impact_analysis != "BAU" %}
+                    <tr>
+                        <td><a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ release.sys_id }}">{{ release.number }}</a></td>
+                        <td>{{ release.state_display }}</td>
+                        <td>{{ release.short_description }}</td>
+                        <td>{{ release.implementation_plan }}</td>
+                        <td>{{ release.backout_plan }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if releases|length == 0 %}
+    <p>No releases to display.</p>
+    {% endif %}
+</body>
+</html>
+
+
+
+
+
