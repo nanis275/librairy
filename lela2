@@ -1,3 +1,20 @@
+Bonjour à tous,
+
+J'ai commencé à travailler sur l'amélioration de l'email d'approbation. Voici les points que j'avais notés lors de notre précédente réunion :
+
+Suppression de la colonne "Close At".
+Retrait de l'impact (nous pouvons l'enlever).
+Suppression de "BAU" et du statut "Cancelled".
+Création d'un modèle plus ergonomique.
+Détermination de l'affichage du bouton d'approbation directement dans l'email (en lien avec ServiceNow).
+Détail de la procédure de rollback pour les cas où des modifications doivent être annulées.
+Si vous avez des suggestions supplémentaires, je suis preneur. Je vous renvoie également le modèle d'email de base en copie pour référence.
+
+Merci d'avance pour vos retours.
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
