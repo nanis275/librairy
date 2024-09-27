@@ -1043,3 +1043,73 @@ Merci d'avance pour vos retours.
 
 
 
+
+
+
+import datetime
+import ast
+
+def get_flexible_changes(fields="", conditions="", since_hours=72, until_hours=0, limit=50, dates_criteria=None):
+    # Vérification si aucune condition n'est présente
+    if not conditions:
+        return "[ERROR] No condition found"
+
+    # Calcul des dates minimum (min_date) et maximum (max_date) pour récupérer les données des 72 dernières heures
+    min_date = (datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=int(since_hours))).strftime("%Y-%m-%d %H:%M:%S")
+    max_date = (datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=int(until_hours))).strftime("%Y-%m-%d %H:%M:%S")
+
+    # Construction des conditions pour min_date et max_date
+    conditions += (
+        f" AND ((start_date != '' AND start_date >= '{min_date}') OR "
+        f"(work_start != '' AND work_start >= '{min_date}') OR "
+        f"(work_end != '' AND work_end >= '{min_date}'))"
+    )
+
+    conditions += (
+        f" AND ((start_date != '' AND start_date <= '{max_date}') OR "
+        f"(work_start != '' AND work_start <= '{max_date}') OR "
+        f"(work_end != '' AND work_end <= '{max_date}'))"
+    )
+
+    # Construction des critères de dates (start_date, end_date, etc.)
+    if not dates_criteria:
+        dates_criteria = ["start_date", "end_date", "closed_at"]  # Critères par défaut
+    elif isinstance(dates_criteria, str):
+        if len(dates_criteria) < 2:
+            return "[ERROR] Dates criteria not correct"
+        elif dates_criteria[0] == "(" and dates_criteria[-1] == ")":
+            dates_criteria = ast.literal_eval(dates_criteria)
+        else:
+            try:
+                temp_dates_criteria = dates_criteria.split(",")
+                dates_criteria = [item.strip() for item in temp_dates_criteria]
+            except:
+                return "[ERROR] Dates criteria not correct"
+
+    # Ajout des conditions pour récupérer les données uniquement de vendredi, samedi, et dimanche
+    conditions += " AND ("
+    for criteria in dates_criteria:
+        conditions += f"(DAYOFWEEK({criteria}) IN (6, 7, 1)) OR "  # 6 = vendredi, 7 = samedi, 1 = dimanche
+    conditions = conditions[:-4] + ")"  # Suppression du dernier "OR" en trop
+
+    # Imprimer les conditions générées (pour débogage)
+    print("Generated conditions:", conditions)
+
+    # Appel de la fonction qui exécute la requête (fonction fictive à titre d'exemple)
+    return select_flexible("change_request", conditions, fields, limit)
+
+def select_flexible(table, conditions, fields, limit):
+    # Ici, tu mettras ta logique pour interroger la base de données et retourner les résultats.
+    # Exemple fictif de données récupérées pour simuler le processus
+    print(f"Executing query on {table} with conditions: {conditions}")
+    return [
+        {"short_description": "Release 1", "start_date": "2023-09-22 09:00:00", "state": "active", "sys_id": "12345"},
+        {"short_description": "Release 2", "start_date": "2023-09-23 11:00:00", "state": "active", "sys_id": "67890"},
+        {"short_description": "Release 3", "start_date": "2023-09-24 15:00:00", "state": "active", "sys_id": "54321"}
+    ]
+
+# Appel de la fonction pour récupérer les données de vendredi, samedi et dimanche
+result = get_flexible_changes(conditions="status='active'", since_hours=72, until_hours=0, limit=50)
+print(result)
+
+
