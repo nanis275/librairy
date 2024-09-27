@@ -1,3 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Release Information</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+        }
+        h1 {
+            font-size: 18px; /* Adjusted size for "Hi" */
+        }
+        h3 {
+            color: MediumSeaGreen;
+        }
+        h5 {
+            color: black;
+            margin-left: 20px;
+            margin-bottom: 5px; /* Reduced space below short description */
+        }
+        p {
+            color: black;
+            margin-left: 20px;
+            margin-top: 0; /* Reduced space above justification and ticket */
+            margin-bottom: 2px; /* Reduced space below justification and ticket */
+        }
+        a {
+            color: mediumblue;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Hi,</h1>
+    <p style="font-size: 14px;">Please see below for the details of releases happening on the EU platform today.</p>
+
+    <!-- Section for releases implemented early today -->
+    <h3 style="color:MediumSeaGreen;">We implemented them early today:</h3>
+    {% for result_item in result %}
+        {% if ("08:" in result_item.start_date or "09:" in result_item.start_date or "10:" in result_item.start_date or "11:" in result_item.start_date or "12:" in result_item.start_date or "13:" in result_item.start_date or "14:" in result_item.start_date) %}
+            {% if result_item.state_display != "Canceled" %}
+                <!-- Exclure les releases contenant "Nighthawk", "BlackBird" ou "Vulcan" dans cette section -->
+                {% if "Nighthawk" not in result_item.short_description and "BlackBird" not in result_item.short_description and "Vulcan" not in result_item.short_description %}
+                    <h5>{{ result_item.short_description }}</h5>
+                    <p>{{ result_item.justification }}</p>
+                    <p><a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ result_item.sys_id }}">{{ result_item.number }}</a></p>
+                    <br><br>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+
+    <!-- Section for releases implemented on or after 17:30 -->
+    <h3 style="color:MediumSeaGreen;">We will implement on or after 17:30 LDN time:</h3>
+    {% for result_item in result %}
+        <!-- Afficher toutes les releases "BlackBird", "Nighthawk", et "Vulcan" entre 08h et 18h -->
+        {% if ("08:" in result_item.start_date or "09:" in result_item.start_date or "10:" in result_item.start_date or "11:" in result_item.start_date or "12:" in result_item.start_date or "13:" in result_item.start_date or "14:" in result_item.start_date or "15:" in result_item.start_date or "16:" in result_item.start_date or "17:" in result_item.start_date or "18:" in result_item.start_date) %}
+            {% if result_item.state_display != "Canceled" %}
+                {% if "Nighthawk" in result_item.short_description or "BlackBird" in result_item.short_description or "Vulcan" in result_item.short_description %}
+                    <!-- Groupement des releases spécifiques après 17h30 -->
+                    {% if loop.first %}
+                        <h3>Nighthawk, BlackBird, and Vulcan Releases</h3>
+                    {% endif %}
+                    <h5>{{ result_item.short_description }}</h5>
+                    <p>{{ result_item.justification }}</p>
+                    <p><a href="https://bpp.service-now.com/now/nav/ui/classic/params/target/change_request.do?sys_id={{ result_item.sys_id }}">{{ result_item.number }}</a></p>
+                    <br><br>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+</body>
+</html>
+
+
+
+
+
+
+
+
 
 30 : Minute (ici 30 minutes).
 17 : Heure (17 heures).
