@@ -1204,3 +1204,18 @@ result = get_flexible_changes(conditions="status='active'", since_hours=72, unti
 print(result)
 
 
+
+
+
+
+
+
+{% for result in results %}
+    {% set raw_text = result.result %}
+    {% set number_start = raw_text.find('number:') + 8 %}
+    {% set number_end = raw_text.find(';', number_start) %}
+    {{ raw_text[number_start:number_end] }}
+{% endfor %}
+
+
+
