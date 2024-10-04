@@ -1210,12 +1210,16 @@ print(result)
 
 
 
-{% for result in results %}
-    {% set raw_text = result.result %}
-    {% set number_start = raw_text.find('number:') + 8 %}
-    {% set number_end = raw_text.find(';', number_start) %}
-    {{ raw_text[number_start:number_end] }}
-{% endfor %}
 
+{% for result in results %}
+    {% set text = result.result %}
+    
+    {# Chercher l'index où commence 'number:' et récupérer la valeur après 'number: ' #}
+    {% set number_start = text.find('number: ') + 8 %}
+    {% set number_end = text.find(';', number_start) %}
+    
+    {# Extraire le numéro de la chaîne et l'afficher #}
+    {{ text[number_start:number_end] }}
+{% endfor %}
 
 
