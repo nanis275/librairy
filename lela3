@@ -72,10 +72,4 @@
           <td>{{ change.short_description }}</td>
           <td>{{ change.justification|safe }}</td>
           <td>{{ change.risk_impact_analysis|safe }}</td>
-          <td>{{ change.implementation_plan|safe }}</td>
-          <td>{{ change.backout_plan|safe }}</td>
-        </tr>
-      {% endif %}
-    {% endfor %}
-  {% endfor %}
-</table>
+          <td>{{ change.implementation
