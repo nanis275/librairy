@@ -10,7 +10,7 @@
     border: 1px solid #dddddd;
   }
   th, td {
-    padding: 15px 20px; /* Augmente le padding pour plus d'espacement */
+    padding: 15px 20px;
   }
   th {
     background-color: #f2f2f2;
@@ -30,37 +30,59 @@
   a:hover {
     text-decoration: underline;
   }
+  /* Styles pour ajuster la largeur des colonnes */
+  .col-number {
+    width: 12%; /* Agrandit la colonne "Number" */
+  }
+  .col-status {
+    width: 12%; /* Agrandit la colonne "Status" */
+  }
+  .col-approved {
+    width: 12%; /* Agrandit la colonne "Approved" */
+  }
+  .col-start-time {
+    width: 12%; /* Agrandit la colonne "Start Time" */
+  }
+  .col-justification {
+    width: 7%; /* Réduit la colonne "Justification" de 70% */
+  }
+  .col-description,
+  .col-risk-impact,
+  .col-implementation,
+  .col-rollback {
+    width: auto; /* Ajustement automatique des autres colonnes */
+  }
 </style>
 
 <table>
   <tr>
-    <th>Number</th>
-    <th>Status</th>
-    <th>Approved?</th>
-    <th>Start Time</th>
-    <th>Short Description</th>
-    <th>Justification</th>
-    <th>Risk Impact</th>
-    <th>Implementation Plan</th>
-    <th>Rollback Plan</th>
+    <th class="col-number">Number</th>
+    <th class="col-status">Status</th>
+    <th class="col-approved">Approved?</th>
+    <th class="col-start-time">Start Time</th>
+    <th class="col-description">Short Description</th>
+    <th class="col-justification">Justification</th>
+    <th class="col-risk-impact">Risk Impact</th>
+    <th class="col-implementation">Implementation Plan</th>
+    <th class="col-rollback">Rollback Plan</th>
   </tr>
   {% for ci, changes in result.items %}
     {% for change in changes %}
       {% if change.state_display != "Canceled" %}
         <tr>
-          <td><a href="https://bnpp.service-now.com/now/nav/u1/classic/params/target/change_request.do?sys_id={{ change.sys_id }}">{{ change.number }}</a></td>
-          <td>{{ change.state_display }}</td>
+          <td class="col-number"><a href="https://bnpp.service-now.com/now/nav/u1/classic/params/target/change_request.do?sys_id={{ change.sys_id }}">{{ change.number }}</a></td>
+          <td class="col-status">{{ change.state_display }}</td>
           {% if "BNPP_CIB UK_GM ES ICET TS_SDM" in change.approval_history_display %}
-            <td>APPROVED</td>
+            <td class="col-approved">APPROVED</td>
           {% else %}
-            <td>NOT APPROVED</td>
+            <td class="col-approved">NOT APPROVED</td>
           {% endif %}
-          <td>{{ change.start_date }}</td>
-          <td>{{ change.short_description }}</td>
-          <td>{{ change.justification|safe }}</td>
-          <td>{{ change.risk_impact_analysis|safe }}</td>
-          <td>{{ change.implementation_plan|safe }}</td>
-          <td>{{ change.backout_plan|safe }}</td>
+          <td class="col-start-time">{{ change.start_date }}</td>
+          <td class="col-description">{{ change.short_description }}</td>
+          <td class="col-justification">{{ change.justification|safe }}</td>
+          <td class="col-risk-impact">{{ change.risk_impact_analysis|safe }}</td>
+          <td class="col-implementation">{{ change.implementation_plan|safe }}</td>
+          <td class="col-rollback">{{ change.backout_plan|safe }}</td>
         </tr>
       {% endif %}
     {% endfor %}
