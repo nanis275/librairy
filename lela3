@@ -10,7 +10,7 @@
     border: 1px solid #dddddd;
   }
   th, td {
-    padding: 12px 15px;
+    padding: 15px 20px; /* Augmente le padding pour plus d'espacement */
   }
   th {
     background-color: #f2f2f2;
@@ -34,15 +34,15 @@
 
 <table>
   <tr>
-    <th>Numéro</th>
-    <th>Statut</th>
-    <th>Approuvé ?</th>
-    <th>Date de début</th>
-    <th>Description courte</th>
+    <th>Number</th>
+    <th>Status</th>
+    <th>Approved?</th>
+    <th>Start Time</th>
+    <th>Short Description</th>
     <th>Justification</th>
-    <th>Impact sur les risques</th>
-    <th>Plan d'implémentation</th>
-    <th>Plan de rollback</th>
+    <th>Risk Impact</th>
+    <th>Implementation Plan</th>
+    <th>Rollback Plan</th>
   </tr>
   {% for ci, changes in result.items %}
     {% for change in changes %}
@@ -51,9 +51,9 @@
           <td><a href="https://bnpp.service-now.com/now/nav/u1/classic/params/target/change_request.do?sys_id={{ change.sys_id }}">{{ change.number }}</a></td>
           <td>{{ change.state_display }}</td>
           {% if "BNPP_CIB UK_GM ES ICET TS_SDM" in change.approval_history_display %}
-            <td>APPROUVÉ</td>
+            <td>APPROVED</td>
           {% else %}
-            <td>NON APPRÉ</td>
+            <td>NOT APPROVED</td>
           {% endif %}
           <td>{{ change.start_date }}</td>
           <td>{{ change.short_description }}</td>
