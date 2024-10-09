@@ -1,14 +1,48 @@
+<style>
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 16px;
+    text-align: left;
+  }
+  table, th, td {
+    border: 1px solid #dddddd;
+  }
+  th, td {
+    padding: 12px 15px;
+  }
+  th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    color: #333;
+  }
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  tr:hover {
+    background-color: #f1f1f1;
+  }
+  a {
+    color: #007bff;
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+</style>
+
 <table>
   <tr>
-    <td>Numéro</td>
-    <td>Statut</td>
-    <td>Approuvé ?</td>
-    <td>Date de début</td>
-    <td>Description courte</td>
-    <td>Justification</td>
-    <td>Impact sur les risques</td>
-    <td>Plan d'implémentation</td>
-    <td>Plan de rollback</td>
+    <th>Numéro</th>
+    <th>Statut</th>
+    <th>Approuvé ?</th>
+    <th>Date de début</th>
+    <th>Description courte</th>
+    <th>Justification</th>
+    <th>Impact sur les risques</th>
+    <th>Plan d'implémentation</th>
+    <th>Plan de rollback</th>
   </tr>
   {% for ci, changes in result.items %}
     {% for change in changes %}
