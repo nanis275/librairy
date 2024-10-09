@@ -10,7 +10,7 @@
     border: 1px solid #dddddd;
   }
   th, td {
-    padding: 15px 20px;
+    padding: 15px 20px; /* Augmente l'espacement entre les cellules */
   }
   th {
     background-color: #f2f2f2;
@@ -30,27 +30,18 @@
   a:hover {
     text-decoration: underline;
   }
-  /* Styles pour ajuster la largeur des colonnes */
+  /* Largeurs spécifiques pour chaque colonne */
   .col-number {
-    width: 12%; /* Agrandit la colonne "Number" */
+    min-width: 200px; /* Agrandit la colonne Number */
   }
   .col-status {
-    width: 12%; /* Agrandit la colonne "Status" */
+    min-width: 150px; /* Agrandit la colonne Status */
   }
   .col-approved {
-    width: 12%; /* Agrandit la colonne "Approved" */
+    min-width: 150px; /* Agrandit la colonne Approved */
   }
   .col-start-time {
-    width: 12%; /* Agrandit la colonne "Start Time" */
-  }
-  .col-justification {
-    width: 7%; /* Réduit la colonne "Justification" de 70% */
-  }
-  .col-description,
-  .col-risk-impact,
-  .col-implementation,
-  .col-rollback {
-    width: auto; /* Ajustement automatique des autres colonnes */
+    min-width: 150px; /* Agrandit la colonne Start Time */
   }
 </style>
 
@@ -60,11 +51,11 @@
     <th class="col-status">Status</th>
     <th class="col-approved">Approved?</th>
     <th class="col-start-time">Start Time</th>
-    <th class="col-description">Short Description</th>
-    <th class="col-justification">Justification</th>
-    <th class="col-risk-impact">Risk Impact</th>
-    <th class="col-implementation">Implementation Plan</th>
-    <th class="col-rollback">Rollback Plan</th>
+    <th>Short Description</th>
+    <th>Justification</th>
+    <th>Risk Impact</th>
+    <th>Implementation Plan</th>
+    <th>Rollback Plan</th>
   </tr>
   {% for ci, changes in result.items %}
     {% for change in changes %}
@@ -78,11 +69,11 @@
             <td class="col-approved">NOT APPROVED</td>
           {% endif %}
           <td class="col-start-time">{{ change.start_date }}</td>
-          <td class="col-description">{{ change.short_description }}</td>
-          <td class="col-justification">{{ change.justification|safe }}</td>
-          <td class="col-risk-impact">{{ change.risk_impact_analysis|safe }}</td>
-          <td class="col-implementation">{{ change.implementation_plan|safe }}</td>
-          <td class="col-rollback">{{ change.backout_plan|safe }}</td>
+          <td>{{ change.short_description }}</td>
+          <td>{{ change.justification|safe }}</td>
+          <td>{{ change.risk_impact_analysis|safe }}</td>
+          <td>{{ change.implementation_plan|safe }}</td>
+          <td>{{ change.backout_plan|safe }}</td>
         </tr>
       {% endif %}
     {% endfor %}
