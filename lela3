@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Change Request Table</title>
+  <title>Table Layout</title>
   <style>
     table {
       width: 100%;
@@ -38,16 +38,10 @@
     }
     /* Largeurs spécifiques pour chaque colonne */
     .col-number {
-      min-width: 200px; /* Agrandit la colonne Number */
+      min-width: 250px; /* Donne plus d'espace à la colonne Number */
     }
-    .col-status {
-      min-width: 150px; /* Agrandit la colonne Status */
-    }
-    .col-approved {
-      min-width: 150px; /* Agrandit la colonne Approved */
-    }
-    .col-start-time {
-      min-width: 150px; /* Agrandit la colonne Start Time */
+    .col-status, .col-approved, .col-start-time {
+      min-width: 180px; /* Donne plus d'espace à ces colonnes */
     }
   </style>
 </head>
