@@ -1,117 +1,91 @@
-Sub ExportCompleteEmailToExcel()
+Sub ExtractHTMLTableToExcel()
 
-    ' Déclaration des objets Outlook
+    ' Déclaration des variables Outlook
     Dim objOutlook As Outlook.Application
     Dim objNamespace As Outlook.Namespace
-    Dim objFolder As Outlook.MAPIFolder
     Dim objMail As Outlook.MailItem
     Dim objSelection As Outlook.Selection
     
-    ' Déclaration des objets Excel
+    ' Déclaration des variables Excel
     Dim oXLApp As Object
     Dim oXLwb As Object
     Dim oXLws As Object
     Dim iRow As Long
+    Dim IE As Object ' Internet Explorer object to load HTML
     
-    ' Créer une instance d'Outlook si nécessaire
-    On Error Resume Next
+    ' Obtenir l'instance d'Outlook
     Set objOutlook = GetObject(, "Outlook.Application")
     If objOutlook Is Nothing Then
         Set objOutlook = CreateObject("Outlook.Application")
     End If
-    On Error GoTo 0
     
-    ' Obtenir l'espace de noms MAPI et la boîte de réception
-    Set objNamespace = objOutlook.GetNamespace("MAPI")
-    Set objFolder = objNamespace.GetDefaultFolder(olFolderInbox)
-    
-    ' Sélectionner les e-mails actuels
-    Set objSelection = objOutlook.ActiveExplorer.Selection
-    
-    ' Vérifier s'il y a un e-mail sélectionné
-    If objSelection.Count = 0 Then
-        MsgBox "Veuillez sélectionner un e-mail.", vbExclamation
-        Exit Sub
-    End If
-    
-    ' Créer une instance d'Excel
-    On Error Resume Next
+    ' Obtenir l'instance d'Excel
     Set oXLApp = GetObject(, "Excel.Application")
     If oXLApp Is Nothing Then
         Set oXLApp = CreateObject("Excel.Application")
     End If
-    On Error GoTo 0
-    
     oXLApp.Visible = True ' Rendre Excel visible
     
-    ' Ouvrir un nouveau classeur Excel
+    ' Créer un nouveau classeur Excel
     Set oXLwb = oXLApp.Workbooks.Add
     Set oXLws = oXLwb.Sheets(1)
     
-    ' Initialiser la ligne pour Excel
+    ' Sélectionner les e-mails actuels dans Outlook
+    Set objSelection = objOutlook.ActiveExplorer.Selection
+    
+    ' Vérifier s'il y a un e-mail sélectionné
+    If objSelection.Count = 0 Then
+        MsgBox "Veuillez sélectionner un e-mail contenant du HTML.", vbExclamation
+        Exit Sub
+    End If
+    
+    ' Extraire le premier e-mail de la sélection
+    Set objMail = objSelection.Item(1)
+    
+    ' Utiliser Internet Explorer pour charger le HTML du corps de l'e-mail
+    Set IE = CreateObject("InternetExplorer.Application")
+    IE.Visible = False ' Garder Internet Explorer invisible
+    
+    ' Charger le corps HTML de l'e-mail dans IE
+    IE.Navigate "about:blank"
+    Do While IE.Busy Or IE.ReadyState <> 4
+        DoEvents
+    Loop
+    IE.document.body.innerHTML = objMail.HTMLBody
+    
+    ' Parcourir le tableau HTML
+    Dim tbl As Object
+    Dim tr As Object
+    Dim td As Object
+    
+    Set tbl = IE.document.getElementsByTagName("table")(0) ' Assumer qu'il y a un seul tableau
+    
     iRow = 1
+    ' Parcourir les lignes du tableau HTML
+    For Each tr In tbl.Rows
+        Dim iCol As Integer
+        iCol = 1
+        ' Parcourir les cellules (td/th) de chaque ligne
+        For Each td In tr.Cells
+            oXLws.Cells(iRow, iCol).Value = td.innerText
+            iCol = iCol + 1
+        Next td
+        iRow = iRow + 1
+    Next tr
     
-    ' Boucle sur la sélection des e-mails
-    For Each objMail In objSelection
-        ' Si c'est un e-mail
-        If objMail.Class = olMail Then
-            ' Obtenir toutes les informations de l'e-mail
-            oXLws.Cells(iRow, 1).Value = "Sujet de l'e-mail"
-            oXLws.Cells(iRow, 2).Value = objMail.Subject
-            iRow = iRow + 1
-            
-            oXLws.Cells(iRow, 1).Value = "Expéditeur"
-            oXLws.Cells(iRow, 2).Value = objMail.SenderName & " (" & objMail.SenderEmailAddress & ")"
-            iRow = iRow + 1
-            
-            oXLws.Cells(iRow, 1).Value = "Destinataires"
-            oXLws.Cells(iRow, 2).Value = objMail.To
-            iRow = iRow + 1
-            
-            oXLws.Cells(iRow, 1).Value = "CC"
-            oXLws.Cells(iRow, 2).Value = objMail.CC
-            iRow = iRow + 1
-            
-            oXLws.Cells(iRow, 1).Value = "Date de réception"
-            oXLws.Cells(iRow, 2).Value = objMail.ReceivedTime
-            iRow = iRow + 1
-            
-            oXLws.Cells(iRow, 1).Value = "Importance"
-            oXLws.Cells(iRow, 2).Value = objMail.Importance
-            iRow = iRow + 1
-            
-            ' Extraire le contenu du corps du message
-            oXLws.Cells(iRow, 1).Value = "Corps du message (texte brut)"
-            oXLws.Cells(iRow, 2).Value = objMail.Body
-            iRow = iRow + 1
-            
-            oXLws.Cells(iRow, 1).Value = "Corps du message (HTML)"
-            oXLws.Cells(iRow, 2).Value = objMail.HTMLBody
-            iRow = iRow + 1
-            
-            ' Gérer les pièces jointes
-            Dim att As Outlook.Attachment
-            If objMail.Attachments.Count > 0 Then
-                oXLws.Cells(iRow, 1).Value = "Pièces jointes"
-                Dim attNames As String
-                attNames = ""
-                
-                ' Boucler sur les pièces jointes
-                For Each att In objMail.Attachments
-                    attNames = attNames & att.FileName & "; "
-                Next att
-                oXLws.Cells(iRow, 2).Value = attNames
-                iRow = iRow + 1
-            End If
-            
-            ' Insérer une ligne vide pour séparer les e-mails
-            iRow = iRow + 1
-        End If
-    Next objMail
-    
-    ' Ajuster la taille des colonnes pour mieux voir le contenu
+    ' Ajuster la taille des colonnes pour mieux voir les données
     oXLws.Columns.AutoFit
     
-    MsgBox "Toutes les informations de l'e-mail ont été exportées avec succès.", vbInformation
+    ' Nettoyer les objets
+    IE.Quit
+    Set IE = Nothing
+    Set oXLws = Nothing
+    Set oXLwb = Nothing
+    Set oXLApp = Nothing
+    Set objMail = Nothing
+    Set objNamespace = Nothing
+    Set objOutlook = Nothing
+    
+    MsgBox "Le tableau HTML a été exporté vers Excel avec succès.", vbInformation
 
 End Sub
