@@ -1,42 +1,36 @@
-Sub ExtractHTMLTableToExcel()
+Sub ExtractHTMLTableToExcel_Simplified()
 
     ' Déclaration des variables Outlook
     Dim objOutlook As Outlook.Application
     Dim objNamespace As Outlook.Namespace
     Dim objMail As Outlook.MailItem
     Dim objSelection As Outlook.Selection
+    Dim HTMLBody As String
     
     ' Déclaration des variables Excel
     Dim oXLApp As Object
     Dim oXLwb As Object
     Dim oXLws As Object
     Dim iRow As Long
-    Dim IE As Object ' Internet Explorer object to load HTML
+    Dim iCol As Long
+    Dim startPos As Long
+    Dim endPos As Long
+    Dim tableContent As String
+    Dim rowData As Variant
+    Dim cellData As Variant
     
     ' Obtenir l'instance d'Outlook
-    On Error Resume Next
     Set objOutlook = GetObject(, "Outlook.Application")
     If objOutlook Is Nothing Then
         Set objOutlook = CreateObject("Outlook.Application")
     End If
-    On Error GoTo 0
     
     ' Obtenir l'instance d'Excel ou en créer une
-    On Error Resume Next
     Set oXLApp = GetObject(, "Excel.Application")
     If oXLApp Is Nothing Then
         Set oXLApp = CreateObject("Excel.Application")
     End If
-    On Error GoTo 0
-    
-    ' Vérifier que l'instance d'Excel a bien été créée
-    If oXLApp Is Nothing Then
-        MsgBox "Erreur : Impossible de créer ou d'accéder à une instance d'Excel.", vbCritical
-        Exit Sub
-    End If
-    
-    ' Rendre Excel visible
-    oXLApp.Visible = True
+    oXLApp.Visible = True ' Rendre Excel visible
     
     ' Créer un nouveau classeur Excel
     Set oXLwb = oXLApp.Workbooks.Add
@@ -54,44 +48,53 @@ Sub ExtractHTMLTableToExcel()
     ' Extraire le premier e-mail de la sélection
     Set objMail = objSelection.Item(1)
     
-    ' Utiliser Internet Explorer pour charger le HTML du corps de l'e-mail
-    Set IE = CreateObject("InternetExplorer.Application")
-    IE.Visible = False ' Garder Internet Explorer invisible
+    ' Obtenir le contenu HTML du corps du message
+    HTMLBody = objMail.HTMLBody
     
-    ' Charger le corps HTML de l'e-mail dans IE
-    IE.Navigate "about:blank"
-    Do While IE.Busy Or IE.ReadyState <> 4
-        DoEvents
-    Loop
-    IE.document.body.innerHTML = objMail.HTMLBody
+    ' Rechercher la table HTML dans le contenu
+    startPos = InStr(1, HTMLBody, "<table")
+    endPos = InStr(startPos, HTMLBody, "</table>") + Len("</table>")
     
-    ' Parcourir le tableau HTML
-    Dim tbl As Object
-    Dim tr As Object
-    Dim td As Object
-    
-    ' Assumer qu'il y a un seul tableau
-    Set tbl = IE.document.getElementsByTagName("table")(0)
-    
-    iRow = 1
-    ' Parcourir les lignes du tableau HTML
-    For Each tr In tbl.Rows
-        Dim iCol As Integer
-        iCol = 1
-        ' Parcourir les cellules (td/th) de chaque ligne
-        For Each td In tr.Cells
-            oXLws.Cells(iRow, iCol).Value = td.innerText
-            iCol = iCol + 1
-        Next td
-        iRow = iRow + 1
-    Next tr
-    
-    ' Ajuster la taille des colonnes pour mieux voir les données
-    oXLws.Columns.AutoFit
+    ' Si une table est trouvée
+    If startPos > 0 And endPos > startPos Then
+        tableContent = Mid(HTMLBody, startPos, endPos - startPos)
+        
+        ' Nettoyer le contenu du tableau
+        tableContent = Replace(tableContent, "<tr>", vbCrLf)
+        tableContent = Replace(tableContent, "<td>", "")
+        tableContent = Replace(tableContent, "</td>", vbTab)
+        tableContent = Replace(tableContent, "</tr>", vbCrLf)
+        
+        ' Diviser le contenu en lignes
+        rowData = Split(tableContent, vbCrLf)
+        
+        ' Parcourir les lignes du tableau
+        iRow = 1
+        For Each row In rowData
+            If Trim(row) <> "" Then
+                ' Diviser les cellules
+                cellData = Split(row, vbTab)
+                iCol = 1
+                For Each cell In cellData
+                    If Trim(cell) <> "" Then
+                        ' Insérer la valeur dans Excel
+                        oXLws.Cells(iRow, iCol).Value = Application.WorksheetFunction.Clean(cell)
+                        iCol = iCol + 1
+                    End If
+                Next cell
+                iRow = iRow + 1
+            End If
+        Next row
+        
+        ' Ajuster les colonnes pour mieux voir les données
+        oXLws.Columns.AutoFit
+        
+        MsgBox "Le tableau HTML a été exporté vers Excel avec succès.", vbInformation
+    Else
+        MsgBox "Aucune table HTML trouvée dans l'e-mail.", vbExclamation
+    End If
     
     ' Nettoyer les objets
-    IE.Quit
-    Set IE = Nothing
     Set oXLws = Nothing
     Set oXLwb = Nothing
     Set oXLApp = Nothing
@@ -99,7 +102,4 @@ Sub ExtractHTMLTableToExcel()
     Set objNamespace = Nothing
     Set objOutlook = Nothing
     
-    MsgBox "Le tableau HTML a été exporté vers Excel avec succès.", vbInformation
-
 End Sub
-
