@@ -14,17 +14,29 @@ Sub ExtractHTMLTableToExcel()
     Dim IE As Object ' Internet Explorer object to load HTML
     
     ' Obtenir l'instance d'Outlook
+    On Error Resume Next
     Set objOutlook = GetObject(, "Outlook.Application")
     If objOutlook Is Nothing Then
         Set objOutlook = CreateObject("Outlook.Application")
     End If
+    On Error GoTo 0
     
-    ' Obtenir l'instance d'Excel
+    ' Obtenir l'instance d'Excel ou en créer une
+    On Error Resume Next
     Set oXLApp = GetObject(, "Excel.Application")
     If oXLApp Is Nothing Then
         Set oXLApp = CreateObject("Excel.Application")
     End If
-    oXLApp.Visible = True ' Rendre Excel visible
+    On Error GoTo 0
+    
+    ' Vérifier que l'instance d'Excel a bien été créée
+    If oXLApp Is Nothing Then
+        MsgBox "Erreur : Impossible de créer ou d'accéder à une instance d'Excel.", vbCritical
+        Exit Sub
+    End If
+    
+    ' Rendre Excel visible
+    oXLApp.Visible = True
     
     ' Créer un nouveau classeur Excel
     Set oXLwb = oXLApp.Workbooks.Add
@@ -58,7 +70,8 @@ Sub ExtractHTMLTableToExcel()
     Dim tr As Object
     Dim td As Object
     
-    Set tbl = IE.document.getElementsByTagName("table")(0) ' Assumer qu'il y a un seul tableau
+    ' Assumer qu'il y a un seul tableau
+    Set tbl = IE.document.getElementsByTagName("table")(0)
     
     iRow = 1
     ' Parcourir les lignes du tableau HTML
@@ -89,3 +102,4 @@ Sub ExtractHTMLTableToExcel()
     MsgBox "Le tableau HTML a été exporté vers Excel avec succès.", vbInformation
 
 End Sub
+
