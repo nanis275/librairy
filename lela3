@@ -1,27 +1,20 @@
-Sub ExtractHTMLTableToExcel_EnhancedDisplay()
+Sub CopyHTMLTableToExcel()
 
-    ' Déclaration des variables Outlook
+    ' Déclaration des objets Outlook
     Dim objOutlook As Outlook.Application
-    Dim objNamespace As Outlook.Namespace
     Dim objMail As Outlook.MailItem
     Dim objSelection As Outlook.Selection
     Dim HTMLBody As String
-    
-    ' Déclaration des variables Excel
     Dim oXLApp As Object
     Dim oXLwb As Object
     Dim oXLws As Object
-    Dim iRow As Long
-    Dim iCol As Long
-    Dim startPos As Long
-    Dim endPos As Long
-    Dim tableContent As String
-    Dim rowData As Variant
-    Dim cellData As Variant
     
-    ' Obtenir l'instance d'Excel déjà ouverte
+    ' Obtenir l'instance d'Excel ou en créer une
     On Error Resume Next
     Set oXLApp = GetObject(, "Excel.Application")
+    If oXLApp Is Nothing Then
+        Set oXLApp = CreateObject("Excel.Application")
+    End If
     On Error GoTo 0
     
     ' Vérifier si l'instance d'Excel est bien ouverte
@@ -53,77 +46,19 @@ Sub ExtractHTMLTableToExcel_EnhancedDisplay()
     ' Extraire le premier e-mail de la sélection
     Set objMail = objSelection.Item(1)
     
-    ' Obtenir le contenu HTML du corps du message
+    ' Obtenir le contenu HTML du corps de l'e-mail
     HTMLBody = objMail.HTMLBody
     
-    ' Rechercher la table HTML dans le contenu
-    startPos = InStr(1, HTMLBody, "<table")
-    endPos = InStr(startPos, HTMLBody, "</table>") + Len("</table>")
+    ' Copier le contenu HTML dans le presse-papiers
+    With CreateObject("MSForms.DataObject")
+        .SetText HTMLBody
+        .PutInClipboard
+    End With
     
-    ' Si une table est trouvée
-    If startPos > 0 And endPos > startPos Then
-        tableContent = Mid(HTMLBody, startPos, endPos - startPos)
-        
-        ' Nettoyer le contenu du tableau
-        tableContent = Replace(tableContent, "<tr>", vbCrLf)
-        tableContent = Replace(tableContent, "<td>", "")
-        tableContent = Replace(tableContent, "</td>", vbTab)
-        tableContent = Replace(tableContent, "</tr>", vbCrLf)
-        
-        ' Supprimer les balises HTML spécifiques pour l'amélioration de l'affichage
-        tableContent = Replace(tableContent, "<a>", "")
-        tableContent = Replace(tableContent, "</a>", "")
-        tableContent = Replace(tableContent, "<br>", vbCrLf)
-        tableContent = Replace(tableContent, "<b>", "")
-        tableContent = Replace(tableContent, "</b>", "")
-        
-        ' Diviser le contenu en lignes
-        rowData = Split(tableContent, vbCrLf)
-        
-        ' Parcourir les lignes du tableau
-        iRow = 1
-        For Each row In rowData
-            If Trim(row) <> "" Then
-                ' Diviser les cellules
-                cellData = Split(row, vbTab)
-                iCol = 1
-                For Each cell In cellData
-                    If Trim(cell) <> "" Then
-                        ' Insérer la valeur directement dans Excel
-                        oXLws.Cells(iRow, iCol).Value = cell
-                        
-                        ' Activer le retour à la ligne automatique
-                        oXLws.Cells(iRow, iCol).WrapText = True
-                        
-                        ' Ajuster l'alignement vertical au centre
-                        oXLws.Cells(iRow, iCol).VerticalAlignment = xlCenter
-                        
-                        iCol = iCol + 1
-                    End If
-                Next cell
-                iRow = iRow + 1
-            End If
-        Next row
-        
-        ' Appliquer du gras sur la première ligne (en-têtes)
-        With oXLws.Rows(1).Font
-            .Bold = True
-        End With
-        
-        ' Ajuster les colonnes pour mieux voir les données
-        oXLws.Columns.AutoFit
-        
-        MsgBox "Le tableau HTML a été exporté vers Excel avec succès.", vbInformation
-    Else
-        MsgBox "Aucune table HTML trouvée dans l'e-mail.", vbExclamation
-    End If
+    ' Coller directement dans Excel à partir du presse-papiers
+    oXLws.PasteSpecial Format:="HTML"
     
-    ' Nettoyer les objets
-    Set oXLws = Nothing
-    Set oXLwb = Nothing
-    Set oXLApp = Nothing
-    Set objMail = Nothing
-    Set objNamespace = Nothing
-    Set objOutlook = Nothing
-    
+    ' Message de confirmation
+    MsgBox "Le tableau HTML a été collé dans Excel avec succès.", vbInformation
+
 End Sub
