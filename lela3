@@ -1,4 +1,4 @@
-Sub CopyFormattedEmailTableToExcel()
+Sub CopyFormattedEmailTableToExcel_WithoutActiveX()
 
     ' Déclaration des objets Outlook
     Dim objOutlook As Outlook.Application
@@ -10,7 +10,7 @@ Sub CopyFormattedEmailTableToExcel()
     Dim oXLwb As Object
     Dim oXLws As Object
 
-    ' Obtenir l'instance d'Outlook et Excel
+    ' Obtenir l'instance d'Outlook
     Set objOutlook = GetObject(, "Outlook.Application")
     Set objSelection = objOutlook.ActiveExplorer.Selection
 
