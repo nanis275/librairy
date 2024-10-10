@@ -82,8 +82,8 @@ Sub ExtractHTMLTableToExcel_UseOpenInstance()
                 iCol = 1
                 For Each cell In cellData
                     If Trim(cell) <> "" Then
-                        ' Insérer la valeur dans Excel
-                        oXLws.Cells(iRow, iCol).Value = Application.WorksheetFunction.Clean(cell)
+                        ' Insérer la valeur directement dans Excel sans nettoyage
+                        oXLws.Cells(iRow, iCol).Value = cell
                         iCol = iCol + 1
                     End If
                 Next cell
