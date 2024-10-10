@@ -1,4 +1,4 @@
-Sub ExtractHTMLTableToExcel_UseOpenInstance()
+Sub ExtractHTMLTableToExcel_EnhancedDisplay()
 
     ' Déclaration des variables Outlook
     Dim objOutlook As Outlook.Application
@@ -70,6 +70,13 @@ Sub ExtractHTMLTableToExcel_UseOpenInstance()
         tableContent = Replace(tableContent, "</td>", vbTab)
         tableContent = Replace(tableContent, "</tr>", vbCrLf)
         
+        ' Supprimer les balises HTML spécifiques pour l'amélioration de l'affichage
+        tableContent = Replace(tableContent, "<a>", "")
+        tableContent = Replace(tableContent, "</a>", "")
+        tableContent = Replace(tableContent, "<br>", vbCrLf)
+        tableContent = Replace(tableContent, "<b>", "")
+        tableContent = Replace(tableContent, "</b>", "")
+        
         ' Diviser le contenu en lignes
         rowData = Split(tableContent, vbCrLf)
         
@@ -82,14 +89,26 @@ Sub ExtractHTMLTableToExcel_UseOpenInstance()
                 iCol = 1
                 For Each cell In cellData
                     If Trim(cell) <> "" Then
-                        ' Insérer la valeur directement dans Excel sans nettoyage
+                        ' Insérer la valeur directement dans Excel
                         oXLws.Cells(iRow, iCol).Value = cell
+                        
+                        ' Activer le retour à la ligne automatique
+                        oXLws.Cells(iRow, iCol).WrapText = True
+                        
+                        ' Ajuster l'alignement vertical au centre
+                        oXLws.Cells(iRow, iCol).VerticalAlignment = xlCenter
+                        
                         iCol = iCol + 1
                     End If
                 Next cell
                 iRow = iRow + 1
             End If
         Next row
+        
+        ' Appliquer du gras sur la première ligne (en-têtes)
+        With oXLws.Rows(1).Font
+            .Bold = True
+        End With
         
         ' Ajuster les colonnes pour mieux voir les données
         oXLws.Columns.AutoFit
