@@ -1,86 +1,117 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Table Layout</title>
-  <style>
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 20px 0;
-      font-size: 16px;
-      text-align: left;
-    }
-    table, th, td {
-      border: 1px solid #dddddd;
-    }
-    th, td {
-      padding: 15px 20px; /* Augmente l'espacement entre les cellules */
-    }
-    th {
-      background-color: #f2f2f2;
-      font-weight: bold;
-      color: #333;
-    }
-    tr:nth-child(even) {
-      background-color: #f9f9f9;
-    }
-    tr:hover {
-      background-color: #f1f1f1;
-    }
-    a {
-      color: #007bff;
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-    /* Largeurs spécifiques pour chaque colonne */
-    .col-number {
-      min-width: 250px; /* Donne plus d'espace à la colonne Number */
-    }
-    .col-status, .col-approved, .col-start-time {
-      min-width: 180px; /* Donne plus d'espace à ces colonnes */
-    }
-  </style>
-</head>
-<body>
+Sub ExportCompleteEmailToExcel()
 
-<table>
-  <tr>
-    <th class="col-number">Number</th>
-    <th class="col-status">Status</th>
-    <th class="col-approved">Approved?</th>
-    <th class="col-start-time">Start Time</th>
-    <th>Short Description</th>
-    <th>Justification</th>
-    <th>Risk Impact</th>
-    <th>Implementation Plan</th>
-    <th>Rollback Plan</th>
-  </tr>
-  {% for ci, changes in result.items %}
-    {% for change in changes %}
-      {% if change.state_display != "Canceled" %}
-        <tr>
-          <td class="col-number"><a href="https://bnpp.service-now.com/now/nav/u1/classic/params/target/change_request.do?sys_id={{ change.sys_id }}">{{ change.number }}</a></td>
-          <td class="col-status">{{ change.state_display }}</td>
-          {% if "BNPP_CIB UK_GM ES ICET TS_SDM" in change.approval_history_display %}
-            <td class="col-approved">APPROVED</td>
-          {% else %}
-            <td class="col-approved">NOT APPROVED</td>
-          {% endif %}
-          <td class="col-start-time">{{ change.start_date }}</td>
-          <td>{{ change.short_description }}</td>
-          <td>{{ change.justification|safe }}</td>
-          <td>{{ change.risk_impact_analysis|safe }}</td>
-          <td>{{ change.implementation_plan|safe }}</td>
-          <td>{{ change.backout_plan|safe }}</td>
-        </tr>
-      {% endif %}
-    {% endfor %}
-  {% endfor %}
-</table>
+    ' Déclaration des objets Outlook
+    Dim objOutlook As Outlook.Application
+    Dim objNamespace As Outlook.Namespace
+    Dim objFolder As Outlook.MAPIFolder
+    Dim objMail As Outlook.MailItem
+    Dim objSelection As Outlook.Selection
+    
+    ' Déclaration des objets Excel
+    Dim oXLApp As Object
+    Dim oXLwb As Object
+    Dim oXLws As Object
+    Dim iRow As Long
+    
+    ' Créer une instance d'Outlook si nécessaire
+    On Error Resume Next
+    Set objOutlook = GetObject(, "Outlook.Application")
+    If objOutlook Is Nothing Then
+        Set objOutlook = CreateObject("Outlook.Application")
+    End If
+    On Error GoTo 0
+    
+    ' Obtenir l'espace de noms MAPI et la boîte de réception
+    Set objNamespace = objOutlook.GetNamespace("MAPI")
+    Set objFolder = objNamespace.GetDefaultFolder(olFolderInbox)
+    
+    ' Sélectionner les e-mails actuels
+    Set objSelection = objOutlook.ActiveExplorer.Selection
+    
+    ' Vérifier s'il y a un e-mail sélectionné
+    If objSelection.Count = 0 Then
+        MsgBox "Veuillez sélectionner un e-mail.", vbExclamation
+        Exit Sub
+    End If
+    
+    ' Créer une instance d'Excel
+    On Error Resume Next
+    Set oXLApp = GetObject(, "Excel.Application")
+    If oXLApp Is Nothing Then
+        Set oXLApp = CreateObject("Excel.Application")
+    End If
+    On Error GoTo 0
+    
+    oXLApp.Visible = True ' Rendre Excel visible
+    
+    ' Ouvrir un nouveau classeur Excel
+    Set oXLwb = oXLApp.Workbooks.Add
+    Set oXLws = oXLwb.Sheets(1)
+    
+    ' Initialiser la ligne pour Excel
+    iRow = 1
+    
+    ' Boucle sur la sélection des e-mails
+    For Each objMail In objSelection
+        ' Si c'est un e-mail
+        If objMail.Class = olMail Then
+            ' Obtenir toutes les informations de l'e-mail
+            oXLws.Cells(iRow, 1).Value = "Sujet de l'e-mail"
+            oXLws.Cells(iRow, 2).Value = objMail.Subject
+            iRow = iRow + 1
+            
+            oXLws.Cells(iRow, 1).Value = "Expéditeur"
+            oXLws.Cells(iRow, 2).Value = objMail.SenderName & " (" & objMail.SenderEmailAddress & ")"
+            iRow = iRow + 1
+            
+            oXLws.Cells(iRow, 1).Value = "Destinataires"
+            oXLws.Cells(iRow, 2).Value = objMail.To
+            iRow = iRow + 1
+            
+            oXLws.Cells(iRow, 1).Value = "CC"
+            oXLws.Cells(iRow, 2).Value = objMail.CC
+            iRow = iRow + 1
+            
+            oXLws.Cells(iRow, 1).Value = "Date de réception"
+            oXLws.Cells(iRow, 2).Value = objMail.ReceivedTime
+            iRow = iRow + 1
+            
+            oXLws.Cells(iRow, 1).Value = "Importance"
+            oXLws.Cells(iRow, 2).Value = objMail.Importance
+            iRow = iRow + 1
+            
+            ' Extraire le contenu du corps du message
+            oXLws.Cells(iRow, 1).Value = "Corps du message (texte brut)"
+            oXLws.Cells(iRow, 2).Value = objMail.Body
+            iRow = iRow + 1
+            
+            oXLws.Cells(iRow, 1).Value = "Corps du message (HTML)"
+            oXLws.Cells(iRow, 2).Value = objMail.HTMLBody
+            iRow = iRow + 1
+            
+            ' Gérer les pièces jointes
+            Dim att As Outlook.Attachment
+            If objMail.Attachments.Count > 0 Then
+                oXLws.Cells(iRow, 1).Value = "Pièces jointes"
+                Dim attNames As String
+                attNames = ""
+                
+                ' Boucler sur les pièces jointes
+                For Each att In objMail.Attachments
+                    attNames = attNames & att.FileName & "; "
+                Next att
+                oXLws.Cells(iRow, 2).Value = attNames
+                iRow = iRow + 1
+            End If
+            
+            ' Insérer une ligne vide pour séparer les e-mails
+            iRow = iRow + 1
+        End If
+    Next objMail
+    
+    ' Ajuster la taille des colonnes pour mieux voir le contenu
+    oXLws.Columns.AutoFit
+    
+    MsgBox "Toutes les informations de l'e-mail ont été exportées avec succès.", vbInformation
 
-</body>
-</html>
+End Sub
