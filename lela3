@@ -189,13 +189,13 @@ End Sub
     }
     /* Style pour les cellules Approved/Not Approved */
     .approved {
-      background-color: #d4edda; /* Vert clair pour approuvé */
-      color: #155724;
+      background-color: green; /* Vert pour approuvé */
+      color: white;
       font-weight: bold;
     }
     .not-approved {
-      background-color: #f8d7da; /* Rouge clair pour non approuvé */
-      color: #721c24;
+      background-color: red; /* Rouge pour non approuvé */
+      color: white;
       font-weight: bold;
     }
   </style>
@@ -244,7 +244,4 @@ End Sub
 </body>
 </html>
 
-
-</body>
-</html>
 
