@@ -163,7 +163,7 @@ End Sub
       border: 1px solid #dddddd;
     }
     th, td {
-      padding: 15px 20px; /* Augmente l'espacement entre les cellules */
+      padding: 15px 20px;
     }
     th {
       background-color: #f2f2f2;
@@ -185,16 +185,18 @@ End Sub
     }
     /* Largeurs spécifiques pour chaque colonne */
     .col-number, .col-status, .col-approved, .col-start-time, .col-end-date {
-      min-width: 650px; /* Donne plus d'espace à ces colonnes */
+      min-width: 150px;
     }
     /* Style pour les cellules Approved/Not Approved */
     .approved {
       background-color: #d4edda; /* Vert clair pour approuvé */
       color: #155724;
+      font-weight: bold;
     }
     .not-approved {
       background-color: #f8d7da; /* Rouge clair pour non approuvé */
       color: #721c24;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -221,9 +223,9 @@ End Sub
           <td class="col-status">{{ change.state_display }}</td>
 
           {% if "BNPP_CIB UK_GM ES ICET TS_SDM" in change.approval_history_display %}
-            <td class="col-approved approved">APPROVED by IREGTR</td> <!-- Approuvé avec couleur verte et texte ajouté -->
+            <td class="col-approved approved">APPROVED by IREGTR</td> <!-- Cellule verte pour "APPROVED" -->
           {% else %}
-            <td class="col-approved not-approved">NOT APPROVED by IREGTR</td> <!-- Non approuvé avec couleur rouge et texte ajouté -->
+            <td class="col-approved not-approved">NOT APPROVED by IREGTR</td> <!-- Cellule rouge pour "NOT APPROVED" -->
           {% endif %}
           
           <td class="col-start-time">{{ change.start_date }}</td>
@@ -238,6 +240,10 @@ End Sub
     {% endfor %}
   {% endfor %}
 </table>
+
+</body>
+</html>
+
 
 </body>
 </html>
