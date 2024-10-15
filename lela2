@@ -1223,3 +1223,91 @@ print(result)
 {% endfor %}
 
 
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Table Layout</title>
+  <style>
+    table {
+      width: 60%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 16px;
+      text-align: left;
+    }
+    table, th, td {
+      border: 1px solid #dddddd;
+    }
+    th, td {
+      padding: 15px 20px; /* Augmente l'espacement entre les cellules */
+    }
+    th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+      color: #333;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+    a {
+      color: #007bff;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    /* Largeurs spécifiques pour chaque colonne */
+    .col-number {
+      min-width: 650px; /* Donne plus d'espace à la colonne Number */
+    }
+    .col-status, .col-approved, .col-start-time {
+      min-width: 650px; /* Donne plus d'espace à ces colonnes */
+    }
+  </style>
+</head>
+<body>
+
+<table>
+  <tr>
+    <th class="col-number">Number</th>
+    <th class="col-status">Status</th>
+    <th class="col-approved">Approved?</th>
+    <th class="col-start-time">Start Time</th>
+    <th>Short Description</th>
+    <th>Justification</th>
+    <th>Risk Impact</th>
+    <th>Implementation Plan</th>
+    <th>Rollback Plan</th>
+  </tr>
+  {% for ci, changes in result.items %}
+    {% for change in changes %}
+      {% if change.state_display != "Canceled" %}
+        <tr>
+          <td class="col-number"><a href="https://bnpp.service-now.com/now/nav/u1/classic/params/target/change_request.do?sys_id={{ change.sys_id }}">{{ change.number }}</a></td>
+          <td class="col-status">{{ change.state_display }}</td>
+          {% if "BNPP_CIB UK_GM ES ICET TS_SDM" in change.approval_history_display %}
+            <td class="col-approved">APPROVED</td>
+          {% else %}
+            <td class="col-approved">NOT APPROVED</td>
+          {% endif %}
+          <td class="col-start-time">{{ change.start_date }}</td>
+          <td>{{ change.short_description }}</td>
+          <td>{{ change.justification|safe }}</td>
+          <td>{{ change.risk_impact_analysis|safe }}</td>
+          <td>{{ change.implementation_plan|safe }}</td>
+          <td>{{ change.backout_plan|safe }}</td>
+        </tr>
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+</table>
+
+</body>
+</html>
