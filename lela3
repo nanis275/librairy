@@ -326,6 +326,7 @@ End Sub
       <th>Justification</th>
       <th>Risk Impact</th>
       <th>Implementation Plan</th>
+      <th>Post Release Check</th> <!-- New Column Header -->
       <th>Rollback Plan</th>
       <th>Post-Release-Check</th>
     </tr>
@@ -350,11 +351,12 @@ End Sub
             <td class="col-start-time">{{ change.start_date }}</td>
             <td class="col-end-date">{{ change.end_date }}</td>
             <td class="col-ci">{{ ci }}</td>
-            <td class="col-requester">{{ change.requested_by_display}</td>
+            <td class="col-requester">{{ change.requested_by_display }}</td>
             <td>{{ change.short_description }}</td>
             <td>{{ change.justification|safe }}</td>
             <td>{{ change.risk_impact_analysis|safe }}</td>
             <td>{{ change.implementation_plan|safe }}</td>
+            <td></td> <!-- Empty cell for the Post Release Check -->
             <td>{{ change.backout_plan|safe }}</td>
           </tr>
         {% endif %}
