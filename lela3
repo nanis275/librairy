@@ -601,3 +601,72 @@ Sub GenerateReleaseNoteEmail()
     Set OutApp = Nothing
 
 End Sub
+
+
+
+
+
+
+Sub GenerateReleaseNoteEmail()
+
+    ' Déclaration des variables
+    Dim OutApp As Object
+    Dim OutMail As Object
+    Dim MailBody As String
+    Dim lastRow As Long
+    Dim i As Long
+    
+    ' Initialisation d'Outlook
+    Set OutApp = CreateObject("Outlook.Application")
+    Set OutMail = OutApp.CreateItem(0)
+    
+    ' Début du contenu HTML de l'e-mail
+    MailBody = "<html lang='en'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'>"
+    MailBody = MailBody & "<title>Release Information</title><style>"
+    MailBody = MailBody & "body {font-family: Calibri, sans-serif; font-size: 16px; margin: 0;} "
+    MailBody = MailBody & "h1 {font-size: 16px; margin-bottom: 10px; font-weight: normal;} "
+    MailBody = MailBody & "h3 {font-size: 16px; color: MediumSeaGreen; margin-bottom: 15px;} "
+    MailBody = MailBody & "h5 {font-size:16px; margin-top: 11px;} "
+    MailBody = MailBody & "p {font-size:16px; margin-bottom: 20px;} "
+    MailBody = MailBody & "a {font-size:16px; color: mediumblue; text-decoration: none; font-style: italic;} "
+    MailBody = MailBody & "ul {padding-left: 30px; margin-left: 22px;} "
+    MailBody = MailBody & "</style></head><body>"
+
+    ' Contenu de l'e-mail avec tes balises HTML
+    MailBody = MailBody & "<h1>Hi,</h1>"
+    MailBody = MailBody & "<p style='font-size: 16px; margin-bottom: 20px;'>Please see below details of releases happening on the EU platform today.</p>"
+    MailBody = MailBody & "<h3>We implemented earlier today:</h3>"
+    
+    ' Parcours des lignes d'Excel et ajout des données dans le HTML
+    lastRow = Cells(Rows.Count, 1).End(xlUp).Row ' Trouve la dernière ligne utilisée
+    For i = 2 To lastRow
+        If Cells(i, 1).Value <> "" Then ' Suppose que la colonne A contient des données à vérifier
+            ' Ajoute la Short Description (colonne H), Justification (colonne I) et Number (colonne A)
+            MailBody = MailBody & "<h5>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style='text-decoration: underline;'>Short Description: " & Cells(i, 8).Value & "</span></h5>" ' Colonne H = 8
+            MailBody = MailBody & "<ul><li>&nbsp;&nbsp;Justification: " & Cells(i, 9).Value & "</li></ul>" ' Colonne I = 9
+            MailBody = MailBody & "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href='https://bnpp.service-now.com/now/nav/ui/classic/params/target/change_request.do%3Fsys_id%3D" & Cells(i, 1).Value & "'>Number: " & Cells(i, 1).Value & "</a>" ' Colonne A = 1
+        End If
+    Next i
+
+    ' Section pour les releases après 17h30
+    MailBody = MailBody & "<h4>We will implement on or after 17:30 LDN time:</h4>"
+    ' Ajoute ici une autre boucle pour les releases prévues après 17h30, comme pour les premières releases
+
+    ' Fermeture du HTML
+    MailBody = MailBody & "</body></html>"
+    
+    ' Paramètres de l'e-mail
+    With OutMail
+        .To = "email@example.com" ' Remplace par l'adresse e-mail cible
+        .CC = ""
+        .BCC = ""
+        .Subject = "Release Note for Today"
+        .HTMLBody = MailBody ' Utiliser HTMLBody pour envoyer un e-mail avec le format HTML
+        .Display ' Utiliser .Send pour envoyer directement l'e-mail, sinon .Display pour prévisualiser
+    End With
+
+    ' Libérer la mémoire
+    Set OutMail = Nothing
+    Set OutApp = Nothing
+
+End Sub
