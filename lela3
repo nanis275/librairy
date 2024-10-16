@@ -367,3 +367,169 @@ End Sub
 
 </body>
 </html>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Release Information</title>
+    <style>
+        body {
+            font-family: Calibri, sans-serif; /* Changed font to Calibri */
+            font-size: 16px; /* Increased font size to 16px */
+            margin: 0; /* Removed default margins */
+        }
+        h1 {
+            font-size: 16px; /* Increased size for "Hi" */
+            margin: 0; /* Removed margin */
+            font-weight: normal; /* Removed bold */
+            margin-bottom: 10px; /* Added margin to create space below */
+        }
+        h3 {
+            font-size: 16px;
+            color: MediumSeaGreen;
+            margin: 0; /* Removed margin */
+            margin-top: 0px; /* Added margin to create space above */
+            margin-bottom: 15px ;
+        }
+        h4 {
+            font-size: 16px;
+            color: MediumSeaGreen;
+            margin: 0; /* Removed margin */
+            margin-top: 30px; /* Added margin to create space above */
+            margin-bottom: 18px;
+        }
+        h5 {
+            font-size:16px;
+            color: black;
+            margin-left: 0; /* Removed left margin */
+            margin-bottom: 0px; /* Reduced space below short description */
+            margin-top: 11px;
+        }
+        p {
+            font-size:16px;
+            color: black;
+            margin: 0; /* Removed margins before and after text */
+        }
+        a {
+            font-size:16px;
+            color: mediumblue;
+            text-decoration: none;
+            font-style: italic;
+
+        }
+
+        ul {
+                padding-left: 30px;
+                margin-top: 0px; 
+                margin-left: 22px;
+        }
+
+        li {
+            margin-bottom: 0px;
+            margin-top: 0px; 
+        }
+    </style>
+</head>
+<body>
+    <h1>Hi,</h1>
+    <p style="font-size: 16px; margin-bottom: 20px;">Please see below details of releases happening on the EU platform today.</p>
+
+    <!-- Section for releases implemented early today -->
+    <h3>We implemented earlier today:</h3>
+    {% for result_item in result %}
+        {% if "08:" in result_item.start_date or "09:" in result_item.start_date or "10:" in result_item.start_date or "11:" in result_item.start_date or "12:" in result_item.start_date or "13:" in result_item.start_date or "14:" in result_item.start_date %}
+            {% if result_item.state_display != "Canceled" %}
+                {% if "BAU" not in result_item.short_description%}
+                     {% if "Nighthawk" in result_item.short_description or "BlackBird" in result_item.short_description %}
+                        {% if loop.first %}
+                            <h3>Nighthawk and BlackBird Releases</h3>
+                        {% endif %}
+                        <h5>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="text-decoration: underline;">{{ result_item.short_description }}</span></h5>
+                        
+                             <ul>
+                                <li>&nbsp;&nbsp;{{ result_item.justification }}</li>
+                            </ul>
+                  
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://bnpp.service-now.com/now/nav/ui/classic/params/target/change_request.do%3Fsys_id%3D
+{{ result_item.sys_id }}">{{ result_item.number }}</a>
+                                     {% elif "Vulcan" in result_item.short_description %}
+                                        {% if loop.first %}
+                                        <h3>Vulcan Releases</h3>
+                                    {% endif %}
+                                <h5>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="text-decoration: underline;">{{ result_item.short_description }}</span></h5>
+                  
+                            <ul>
+                                <li>&nbsp;&nbsp;{{ result_item.justification }}</li>
+                            </ul>
+
+                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://bnpp.service-now.com/now/nav/ui/classic/params/target/change_request.do%3Fsys_id%3D
+{{ result_item.sys_id }}">{{ result_item.number }}</a>
+
+                      {% else %}
+                                  {% if loop.first %}
+                                 <h3>Other Releases</h3>
+                      {% endif %}
+                            <h5>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="text-decoration: underline;"> {{ result_item.short_description }}</span></h5>
+                        
+                            <ul>
+                                <li>&nbsp;&nbsp;{{ result_item.justification }}</li>
+                           </ul>
+                        
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://bnpp.service-now.com/now/nav/ui/classic/params/target/change_request.do%3Fsys_id%3D
+{{ result_item.sys_id }}">{{ result_item.number }}</a>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+
+    <!-- Section for releases implemented on or after 17:30 -->
+    <h4>We will implement on or after 17:30 LDN time:</h4>
+    {% for result_item in result %}
+       {% if "15:" in result_item.start_date or "16:" in result_item.start_date or "17:" in result_item.start_date or "18:" in result_item.start_date %}
+           {% if result_item.state_display != "Canceled" %}
+             {% if "BAU" not in result_item.short_description %}
+                 {% if "Nighthawk" in result_item.short_description or "BlackBird" in result_item.short_description %}
+                      {% if loop.first %}
+                          <h3>Nighthawk and BlackBird Releases</h3>
+                     {% endif %}
+                     <h5>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="text-decoration: underline;">{{ result_item.short_description }}</span></h5>
+                     
+                            <ul>
+                               <li>&nbsp;&nbsp;{{ result_item.justification }}</li>
+                          </ul>
+                          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://bnpp.service-now.com/now/nav/ui/classic/params/target/change_request.do%3Fsys_id%3D
+{{ result_item.sys_id }}">{{ result_item.number }}</a></p>
+                  {% elif "Vulcan" in result_item.short_description %}
+                        {% if loop.first %}
+                         <h3>Vulcan Releases</h3>
+                     {% endif %}
+                     <h5>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="text-decoration: underline;">{{ result_item.short_description }}</span></h5>
+                          <ul>
+                                  <li>&nbsp;&nbsp;{{ result_item.justification }}</li>
+                            </ul>
+      
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://bnpp.service-now.com/now/nav/ui/classic/params/target/change_request.do%3Fsys_id%3D
+{{ result_item.sys_id }}">{{ result_item.number }}</a></p>
+                  {% else %}
+                       {% if loop.first %}
+                          <h3>Other Releases</h3>
+                      {% endif %}
+                      <h5>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="text-decoration: underline;"> {{ result_item.short_description }}</span></h5>
+                     
+                          <ul>
+                                <li>&nbsp;&nbsp;{{ result_item.justification }}</li>
+                           </ul>
+      
+                          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://bnpp.service-now.com/now/nav/ui/classic/params/target/change_request.do%3Fsys_id%3D
+{{ result_item.sys_id }}">{{ result_item.number }}</a>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+</body>
+</html>
