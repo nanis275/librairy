@@ -255,3 +255,113 @@ End Sub
 </html>
 
 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Table Layout</title>
+  <style>
+    table {
+      width: 60%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 16px;
+      text-align: left;
+    }
+    table, th, td {
+      border: 1px solid #dddddd;
+    }
+    th, td {
+      padding: 15px 20px;
+    }
+    th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+      color: #333;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+    a {
+      color: #007bff;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    /* Largeurs spécifiques pour chaque colonne */
+    .col-number, .col-status, .col-approved, .col-start-time, .col-end-date, .col-ci, .col-requester {
+      min-width: 850px;
+    }
+    /* Style pour les cellules Approved/Not Approved */
+    .approved {
+      background-color: green;
+      color: white;
+      font-weight: bold;
+    }
+    .not-approved {
+      background-color: red;
+      color: white;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <table>
+    <tr>
+      <th class="col-number">Number</th>
+      <th class="col-status">Status</th>
+      <th class="col-approved">Approved by IREGTR ?</th>
+      <th class="col-start-time">Start Time</th>
+      <th class="col-end-date">End Date</th>
+      <th class="col-ci">CI</th>
+      <th class="col-requester">Requester</th>
+      <th>Short Description</th>
+      <th>Justification</th>
+      <th>Risk Impact</th>
+      <th>Implementation Plan</th>
+      <th>Rollback Plan</th>
+      <th>Post-Release-Check</th>
+    </tr>
+
+    {% for ci, changes in result.items %}
+      {% for change in changes %}
+        {% if change.state_display != "Canceled" %}
+          <tr>
+            <td class="col-number">
+              <a href="https://bnpp.service-now.com/now/nav/ui/classic/params/target/change_request.do%3Fsys_id%3D{{ change.sys_id }}">
+                {{ change.number }}
+              </a>
+            </td>
+            <td class="col-status">{{ change.state_display }}</td>
+
+            {% if "BNPP_CIB UK_GM ES ICET TS_SDM" in change.approval_history_display %}
+              <td class="col-approved approved">APPROVED </td>
+            {% else %}
+              <td class="col-approved not-approved">NOT APPROVED</td>
+            {% endif %}
+
+            <td class="col-start-time">{{ change.start_date }}</td>
+            <td class="col-end-date">{{ change.end_date }}</td>
+            <td class="col-ci">{{ ci }}</td>
+            <td class="col-requester">{{ change.requested_by_display}</td>
+            <td>{{ change.short_description }}</td>
+            <td>{{ change.justification|safe }}</td>
+            <td>{{ change.risk_impact_analysis|safe }}</td>
+            <td>{{ change.implementation_plan|safe }}</td>
+            <td>{{ change.backout_plan|safe }}</td>
+          </tr>
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
+
+  </table>
+
+</body>
+</html>
