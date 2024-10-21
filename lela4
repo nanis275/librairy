@@ -1,1 +1,85 @@
+Sub CopyFormattedEmailTableToExcel_WithoutActiveX()
 
+    ' Declare Outlook objects
+    Dim objOutlook As Outlook.Application
+    Dim objMail As Outlook.MailItem
+    Dim objSelection As Outlook.Selection
+    Dim oInspector As Outlook.Inspector
+    Dim wdDoc As Object ' Word.Document for the email body
+    Dim oXLApp As Object
+    Dim oXLwb As Object
+    Dim oXLws As Object
+
+    ' Get the Outlook instance
+    On Error Resume Next
+    Set objOutlook = GetObject(, "Outlook.Application")
+    If objOutlook Is Nothing Then
+        MsgBox "Outlook is not running.", vbExclamation
+        Exit Sub
+    End If
+    On Error GoTo 0
+
+    ' Get the selected email
+    Set objSelection = objOutlook.ActiveExplorer.Selection
+    If objSelection.Count = 0 Then
+        MsgBox "Please select an email with HTML content.", vbExclamation
+        Exit Sub
+    End If
+
+    ' Get the first email in the selection
+    Set objMail = objSelection.Item(1)
+
+    ' Open the email in an inspector window to access its body as a Word document
+    Set oInspector = objMail.GetInspector
+    Set wdDoc = oInspector.WordEditor ' This converts the email content into a Word Document object
+
+    ' Check if wdDoc is properly set
+    If wdDoc Is Nothing Then
+        MsgBox "Failed to access email content.", vbExclamation
+        Exit Sub
+    End If
+
+    ' Select and copy the email content
+    wdDoc.Content.Select
+    wdDoc.Application.Selection.Copy ' Copy the selected content (formatted) to the clipboard
+
+    ' Get or create an instance of Excel
+    On Error Resume Next
+    Set oXLApp = GetObject(, "Excel.Application")
+    If oXLApp Is Nothing Then
+        Set oXLApp = CreateObject("Excel.Application")
+    End If
+    On Error GoTo 0
+
+    ' Check if Excel is running
+    If oXLApp Is Nothing Then
+        MsgBox "Please open Excel manually before running the macro.", vbExclamation
+        Exit Sub
+    End If
+
+    ' Open the specific workbook
+    On Error GoTo ErrorHandler
+    Set oXLwb = oXLApp.Workbooks.Open("\\londata001.uk.net.intra\Infdata\MIGRATED\tmp\irgetr\RNfulldata12.xlsm")
+
+    ' Use the first sheet in the workbook
+    Set oXLws = oXLwb.Sheets(1)
+
+    ' Clear existing content on the sheet
+    oXLws.Cells.Clear
+
+    ' Paste the formatted content from the clipboard into cell A1
+    oXLws.Range("A1").PasteSpecial
+
+    ' Make Excel visible to the user
+    oXLApp.Visible = True
+
+    ' Confirm successful completion
+    MsgBox "The formatted table has been pasted into Excel successfully.", vbInformation
+
+    Exit Sub
+
+ErrorHandler:
+    MsgBox "An error occurred: " & Err.Description, vbCritical
+    Exit Sub
+
+End Sub
