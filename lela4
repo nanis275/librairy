@@ -88,3 +88,76 @@ Sub CopyFormattedEmailTableToExcel_WithoutActiveX()
     MsgBox "Le tableau formaté a été collé dans Excel avec succès.", vbInformation
 
 End Sub
+
+
+
+Sub CopyFormattedEmailTableToExcel_WithoutActiveX()
+
+    ' Déclaration des objets Outlook
+    Dim objOutlook As Outlook.Application
+    Dim objMail As Outlook.MailItem
+    Dim objSelection As Outlook.Selection
+    Dim oInspector As Outlook.Inspector
+    Dim wdDoc As Object ' Word.Document for the email body
+    Dim oXLApp As Object
+    Dim oXLwb As Object
+    Dim oXLws As Object
+    Dim filePath As String
+
+    ' Obtenir l'instance d'Outlook
+    Set objOutlook = GetObject(, "Outlook.Application")
+    Set objSelection = objOutlook.ActiveExplorer.Selection
+
+    ' Vérifier s'il y a un e-mail sélectionné
+    If objSelection.Count = 0 Then
+        MsgBox "Veuillez sélectionner un e-mail contenant du HTML.", vbExclamation
+        Exit Sub
+    End If
+
+    ' Extraire le premier e-mail de la sélection
+    Set objMail = objSelection.Item(1)
+
+    ' Ouvrir l'e-mail dans un inspecteur pour accéder à son contenu en tant que document Word
+    Set oInspector = objMail.GetInspector
+    Set wdDoc = oInspector.WordEditor ' Convertir le contenu en un document Word
+
+    ' Sélectionner tout le contenu de l'e-mail
+    wdDoc.Content.Select
+    wdDoc.Application.Selection.Copy ' Copier le contenu sélectionné (formaté) dans le presse-papiers
+
+    ' Obtenir l'instance d'Excel ou en créer une
+    On Error Resume Next
+    Set oXLApp = GetObject(, "Excel.Application")
+    If oXLApp Is Nothing Then
+        Set oXLApp = CreateObject("Excel.Application")
+    End If
+    On Error GoTo 0
+
+    ' Vérifier si Excel est ouvert
+    If oXLApp Is Nothing Then
+        MsgBox "Veuillez ouvrir Excel manuellement avant d'exécuter la macro.", vbExclamation
+        Exit Sub
+    End If
+
+    ' Spécifier le chemin du fichier Excel que vous voulez ouvrir
+    filePath = "C:\chemin\vers\votre\fichier.xlsx" ' Remplacez par le chemin réel du fichier Excel
+
+    ' Ouvrir le fichier Excel spécifique
+    Set oXLwb = oXLApp.Workbooks.Open(filePath)
+
+    ' Utiliser la première feuille du classeur ouvert
+    Set oXLws = oXLwb.Sheets(1)
+
+    ' Effacer dynamiquement l'ancien contenu du tableau avant de coller le nouveau
+    oXLws.Cells.Clear ' Efface tout le contenu de la feuille de calcul
+
+    ' Se placer sur la cellule A1
+    oXLws.Range("A1").Select
+
+    ' Coller le contenu formaté de l'e-mail directement dans Excel
+    oXLws.Paste
+
+    ' Message de confirmation
+    MsgBox "Le tableau formaté a été collé dans Excel avec succès.", vbInformation
+
+End Sub
