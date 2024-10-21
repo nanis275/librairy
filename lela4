@@ -1,6 +1,6 @@
 Sub CopyFormattedEmailTableToExcel_WithoutActiveX()
 
-    ' Declare Outlook objects
+    ' Déclaration des objets Outlook
     Dim objOutlook As Outlook.Application
     Dim objMail As Outlook.MailItem
     Dim objSelection As Outlook.Selection
@@ -10,40 +10,43 @@ Sub CopyFormattedEmailTableToExcel_WithoutActiveX()
     Dim oXLwb As Object
     Dim oXLws As Object
 
-    ' Get the Outlook instance
+    ' Obtenir l'instance d'Outlook
     On Error Resume Next
     Set objOutlook = GetObject(, "Outlook.Application")
-    If objOutlook Is Nothing Then
-        MsgBox "Outlook is not running.", vbExclamation
-        Exit Sub
-    End If
     On Error GoTo 0
 
-    ' Get the selected email
-    Set objSelection = objOutlook.ActiveExplorer.Selection
-    If objSelection.Count = 0 Then
-        MsgBox "Please select an email with HTML content.", vbExclamation
+    If objOutlook Is Nothing Then
+        MsgBox "Outlook n'est pas en cours d'exécution.", vbExclamation
         Exit Sub
     End If
 
-    ' Get the first email in the selection
+    ' Obtenir la sélection d'e-mails
+    Set objSelection = objOutlook.ActiveExplorer.Selection
+
+    ' Vérifier s'il y a un e-mail sélectionné
+    If objSelection.Count = 0 Then
+        MsgBox "Veuillez sélectionner un e-mail contenant du HTML.", vbExclamation
+        Exit Sub
+    End If
+
+    ' Extraire le premier e-mail de la sélection
     Set objMail = objSelection.Item(1)
 
-    ' Open the email in an inspector window to access its body as a Word document
+    ' Ouvrir l'e-mail dans un inspecteur pour accéder à son contenu en tant que document Word
     Set oInspector = objMail.GetInspector
-    Set wdDoc = oInspector.WordEditor ' This converts the email content into a Word Document object
+    Set wdDoc = oInspector.WordEditor ' Convertir le contenu en un document Word
 
-    ' Check if wdDoc is properly set
+    ' Vérifier si le contenu Word est accessible
     If wdDoc Is Nothing Then
-        MsgBox "Failed to access email content.", vbExclamation
+        MsgBox "Impossible d'accéder au contenu de l'e-mail.", vbExclamation
         Exit Sub
     End If
 
-    ' Select and copy the email content
+    ' Sélectionner et copier le contenu de l'e-mail
     wdDoc.Content.Select
-    wdDoc.Application.Selection.Copy ' Copy the selected content (formatted) to the clipboard
+    wdDoc.Application.Selection.Copy ' Copier le contenu sélectionné (formaté) dans le presse-papiers
 
-    ' Get or create an instance of Excel
+    ' Obtenir l'instance d'Excel ou en créer une
     On Error Resume Next
     Set oXLApp = GetObject(, "Excel.Application")
     If oXLApp Is Nothing Then
@@ -51,35 +54,37 @@ Sub CopyFormattedEmailTableToExcel_WithoutActiveX()
     End If
     On Error GoTo 0
 
-    ' Check if Excel is running
+    ' Vérifier si Excel est ouvert
     If oXLApp Is Nothing Then
-        MsgBox "Please open Excel manually before running the macro.", vbExclamation
+        MsgBox "Veuillez ouvrir Excel manuellement avant d'exécuter la macro.", vbExclamation
         Exit Sub
     End If
 
-    ' Open the specific workbook
-    On Error GoTo ErrorHandler
+    ' Ouvrir le fichier Excel existant
+    On Error Resume Next
     Set oXLwb = oXLApp.Workbooks.Open("\\londata001.uk.net.intra\Infdata\MIGRATED\tmp\irgetr\RNfulldata12.xlsm")
+    If oXLwb Is Nothing Then
+        MsgBox "Impossible d'ouvrir le fichier Excel.", vbExclamation
+        Exit Sub
+    End If
+    On Error GoTo 0
 
-    ' Use the first sheet in the workbook
+    ' Utiliser la première feuille du classeur
     Set oXLws = oXLwb.Sheets(1)
 
-    ' Clear existing content on the sheet
+    ' Effacer tout le contenu de la feuille
     oXLws.Cells.Clear
 
-    ' Paste the formatted content from the clipboard into cell A1
-    oXLws.Range("A1").PasteSpecial
+    ' Se placer sur la cellule A1
+    oXLws.Range("A1").Select
 
-    ' Make Excel visible to the user
+    ' Coller le contenu formaté de l'e-mail directement dans Excel
+    oXLws.PasteSpecial
+
+    ' Rendre Excel visible pour l'utilisateur
     oXLApp.Visible = True
 
-    ' Confirm successful completion
-    MsgBox "The formatted table has been pasted into Excel successfully.", vbInformation
-
-    Exit Sub
-
-ErrorHandler:
-    MsgBox "An error occurred: " & Err.Description, vbCritical
-    Exit Sub
+    ' Message de confirmation
+    MsgBox "Le tableau formaté a été collé dans Excel avec succès.", vbInformation
 
 End Sub
