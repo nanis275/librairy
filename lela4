@@ -245,3 +245,129 @@ WHERE
     )
     AND ap.approver = '4ddcb837db78d41003ee4dc2ba9619be'
 LIMIT 300;
+
+
+
+import ast
+import datetime
+import re
+
+def release_note_request(assignment_groups="", added_cis="*", removed_cis="*", since_hours=24, until_hours=2, limit="50", states="*", approver=''):
+    # Release note format for changes on assignment_groups or added_cis, removing removed_cis (grouped by CIs)
+    if not assignment_groups and not added_cis:
+        return "[ERROR] No Assignment group or CIs Found"
+
+    conditions = ""
+
+    # Handling Assignment Groups
+    if assignment_groups:
+        if isinstance(assignment_groups, str):
+            if len(assignment_groups) < 2:
+                return "[ERROR] Assignment Group criteria not correct"
+            elif assignment_groups[0] == "[" and assignment_groups[-1] == "]":
+                try:
+                    groups = ast.literal_eval(assignment_groups)
+                except Exception:
+                    return "[ERROR] Assignment Group criteria not correct"
+            else:
+                try:
+                    groups = assignment_groups.split(",")
+                except Exception:
+                    return "[ERROR] Assignment Group criteria not correct"
+        else:
+            return "[ERROR] Assignment Group criteria not correct"
+
+        conditions += "(("
+        for group in groups:
+            conditions += " UPPER(sn.assignment_group_display) LIKE UPPER('%" + group.strip() + "%') OR"
+        conditions = conditions[:-2] + ")) AND "
+
+    # Handling Added CIs
+    if added_cis:
+        if isinstance(added_cis, str):
+            if len(added_cis) < 2:
+                return "[ERROR] Added CIs criteria not correct"
+            elif added_cis[0] == "[" and added_cis[-1] == "]":
+                try:
+                    added_cis = ast.literal_eval(added_cis)
+                except Exception:
+                    return "[ERROR] Added CIs criteria not correct"
+            else:
+                try:
+                    added_cis = added_cis.split(",")
+                except Exception:
+                    return "[ERROR] Added CIs criteria not correct"
+        else:
+            return "[ERROR] Added CIs criteria not correct"
+
+        conditions += "("
+        for ci in added_cis:
+            conditions += " UPPER(sn.cmdb_ci_display) LIKE UPPER('%" + ci.strip() + "%') OR"
+        conditions = conditions[:-2] + ") AND "
+
+    # Handling Removed CIs
+    if removed_cis:
+        if isinstance(removed_cis, str):
+            if len(removed_cis) < 2:
+                return "[ERROR] Removed CIs criteria not correct"
+            elif removed_cis[0] == "[" and removed_cis[-1] == "]":
+                try:
+                    removed_cis = ast.literal_eval(removed_cis)
+                except Exception:
+                    return "[ERROR] Removed CIs criteria not correct"
+            else:
+                try:
+                    removed_cis = removed_cis.split(",")
+                except Exception:
+                    return "[ERROR] Removed CIs criteria not correct"
+        else:
+            return "[ERROR] Removed CIs criteria not correct"
+
+        conditions += "("
+        for ci in removed_cis:
+            conditions += " UPPER(sn.cmdb_ci_display) NOT LIKE UPPER('%" + ci.strip() + "%') AND"
+        conditions = conditions[:-4] + ") AND "
+
+    # Handling States
+    if states:
+        if isinstance(states, str):
+            if len(states) < 2:
+                return "[ERROR] State criteria not correct"
+            elif states[0] == "[" and states[-1] == "]":
+                try:
+                    states = ast.literal_eval(states)
+                except Exception:
+                    return "[ERROR] State criteria not correct"
+            else:
+                try:
+                    states = states.split(",")
+                except Exception:
+                    return "[ERROR] State criteria not correct"
+
+        conditions += "("
+        for state in states:
+            conditions += " sn.state_display = '" + state.strip() + "' OR"
+        conditions = conditions[:-3] + ") AND "
+
+    # Date Filtering
+    min_date = datetime.datetime.strftime(
+        (datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=int(since_hours))),
+        "%Y-%m-%d %H:%M:%S"
+    )
+    max_date = datetime.datetime.strftime(
+        (datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=int(until_hours))),
+        "%Y-%m-%d %H:%M:%S"
+    )
+    conditions += "((sn.start_date >= '" + min_date + "' OR sn.work_start >= '" + min_date + "' OR sn.work_end >= '" + min_date + "')"
+    conditions += " AND (sn.start_date <= '" + max_date + "' OR sn.work_start <= '" + max_date + "' OR sn.work_end <= '" + max_date + "')) AND "
+
+    # Add approver condition
+    if approver:
+        conditions += "ap.approver = '" + approver + "' AND "
+
+    # Remove trailing AND
+    if conditions.endswith(" AND "):
+        conditions = conditions[:-5]
+
+    # The function only returns the conditions and limit
+    return conditions, limit
