@@ -163,10 +163,85 @@ Sub CopyFormattedEmailTableToExcel_WithoutActiveX()
 End Sub
 
 
-change_request as sn LEFT JOIN servicenow.sysapproval_approver as ap on sn.number = ap.sysapproval_display', "(( UPPER(assignment_group_display) LIKE UPPER('%BNPP_CIB_UK_GM ES ICET TS_SDM%') 
+SELECT servicenow.change_request as sn LEFT JOIN servicenow.sysapproval_approver as ap on sn.number = ap.sysapproval_display', " WHERE (( UPPER(assignment_group_display) LIKE UPPER('%BNPP_CIB_UK_GM ES ICET TS_SDM%') 
 OR UPPER(assignment_group_display) LIKE UPPER('%BNPP_CIB_UK_GM ES ICET AP_SDM%') ) OR ( UPPER(cmdb_ci_display)
 LIKE UPPER('%NIGHTHAWK%') OR UPPER(cmdb_ci_display) LIKE UPPER('%VULCAN%') )) AND ( UPPER(cmdb_ci_display) NOT LIKE UPPER('%LYNX%') AND UPPER(cmdb_ci_display) NOT LIKE UPPER('%Credit%') AND UPPER(cmdb_ci_display) NOT LIKE UPPER('%JAG%')
  AND UPPER(cmdb_ci_display) NOT LIKE UPPER('%QUARTZC%') AND UPPER(cmdb_ci_display) NOT LIKE UPPER('%CRDION%') AND UPPER(cmdb_ci_display) NOT LIKE UPPER('%OMEGA%') ) AND ( ( sn.start_date != '' AND sn.start_date > '2024-10-18 15:28:27') OR (work_start != '' AND work_start > '2024-10-18 15:28:27') OR ( work_end != '' AND work_end > '2024-10-18 15:28:27')) AND ( ( sn.start_date != '' AND sn.start_date < '2024-10-18 18:28:27') OR (work_start != '' AND work_start < '2024-10-18 18:28:27') OR ( work_end != '' AND work_end > '2024-10-18 18:28:27')) AND ap.approver = '4ddcb837db78d41003ee4dc2ba9619be','number, short_description, description, cmdb_ci_display, sn.start_date, sn.end_date, justification, implementation_plan, risk_impact_analysis, backout_plan, test_plan, phase, close_code, state_display, assignment_group_display, assigned_to_display, approval, business_service_display, comments_and_work_notes_display, 
 requested_by_display, location_display, category, opened_by_display, requested_by_display, closed_at, work_start, work_end, approval_history_display, sn.sys_id, ap.sys_id as sys_id_approval', '300']
 
 SELECT number, short_description, description, cmdb_ci_display, start_date, end_date, justification, implementation_plan, risk_impact_analysis, backout_plan, test_plan, phase, close_code, state_display, assignment_group_display, assigned_to_display, approval, business_service_display, comments_and_work_notes_display, requested_by_display, location_display, category, opened_by_display, requested_by_display, closed_at, work_start, work_end, approval_history_display, sys_id FROM servicenow.change_request WHERE (( UPPER(assignment_group_display) LIKE UPPER('%BNPP_CIB_UK_GM ES ICET TS_SDM%') OR UPPER(assignment_group_display) LIKE UPPER('%BNPP_CIB_UK_GM ES ICET AP_SDM%') )  OR ( UPPER(cmdb_ci_display) LIKE UPPER('%NIGHTHAWK%') OR UPPER(cmdb_ci_display) LIKE UPPER('%VULCAN%') )) AND ( UPPER(cmdb_ci_display) NOT LIKE UPPER('%LYNX%') AND UPPER(cmdb_ci_display) NOT LIKE UPPER('%Credit%') AND UPPER(cmdb_ci_display) NOT LIKE UPPER('%JAG%') AND UPPER(cmdb_ci_display) NOT LIKE UPPER('%QUARTZC%') AND UPPER(cmdb_ci_display) NOT LIKE UPPER('%CRDION%') AND UPPER(cmdb_ci_display) NOT LIKE UPPER('%OMEGA%') ) AND ( ( start_date != '' AND start_date > '2024-10-21 06:21:30') OR (work_start != '' AND work_start > '2024-10-21 06:21:30') OR ( work_end != '' AND work_end > '2024-10-21 06:21:30')) AND ( ( start_date != '' AND start_date < '2024-10-22 01:21:30') OR (work_start != '' AND work_start < '2024-10-22 01:21:30') OR ( work_end != '' AND work_end > '2024-10-22 01:21:30')) LIMIT 75
+
+
+
+
+
+
+
+
+
+
+
+
+SELECT 
+    sn.number, 
+    sn.short_description, 
+    sn.description, 
+    sn.cmdb_ci_display, 
+    sn.start_date, 
+    sn.end_date, 
+    sn.justification, 
+    sn.implementation_plan, 
+    sn.risk_impact_analysis, 
+    sn.backout_plan, 
+    sn.test_plan, 
+    sn.phase, 
+    sn.close_code, 
+    sn.state_display, 
+    sn.assignment_group_display, 
+    sn.assigned_to_display, 
+    sn.approval, 
+    sn.business_service_display, 
+    sn.comments_and_work_notes_display, 
+    sn.requested_by_display, 
+    sn.location_display, 
+    sn.category, 
+    sn.opened_by_display, 
+    sn.requested_by_display, 
+    sn.closed_at, 
+    sn.work_start, 
+    sn.work_end, 
+    sn.approval_history_display, 
+    sn.sys_id, 
+    ap.sys_id AS sys_id_approval
+FROM 
+    servicenow.change_request AS sn
+LEFT JOIN 
+    servicenow.sysapproval_approver AS ap 
+    ON sn.number = ap.sysapproval_display
+WHERE 
+    (
+        UPPER(sn.assignment_group_display) LIKE UPPER('%BNPP_CIB_UK_GM ES ICET TS_SDM%') 
+        OR UPPER(sn.assignment_group_display) LIKE UPPER('%BNPP_CIB_UK_GM ES ICET AP_SDM%')
+    )
+    OR (
+        UPPER(sn.cmdb_ci_display) LIKE UPPER('%NIGHTHAWK%') 
+        OR UPPER(sn.cmdb_ci_display) LIKE UPPER('%VULCAN%')
+    )
+    AND UPPER(sn.cmdb_ci_display) NOT LIKE UPPER('%LYNX%')
+    AND UPPER(sn.cmdb_ci_display) NOT LIKE UPPER('%Credit%')
+    AND UPPER(sn.cmdb_ci_display) NOT LIKE UPPER('%JAG%')
+    AND UPPER(sn.cmdb_ci_display) NOT LIKE UPPER('%QUARTZC%')
+    AND UPPER(sn.cmdb_ci_display) NOT LIKE UPPER('%CRDION%')
+    AND UPPER(sn.cmdb_ci_display) NOT LIKE UPPER('%OMEGA%')
+    AND (
+        (sn.start_date IS NOT NULL AND sn.start_date > '2024-10-21 06:21:30')
+        OR (sn.work_start IS NOT NULL AND sn.work_start > '2024-10-21 06:21:30')
+        OR (sn.work_end IS NOT NULL AND sn.work_end > '2024-10-21 06:21:30')
+    )
+    AND (
+        (sn.start_date IS NOT NULL AND sn.start_date < '2024-10-22 01:21:30')
+        OR (sn.work_start IS NOT NULL AND sn.work_start < '2024-10-22 01:21:30')
+        OR (sn.work_end IS NOT NULL AND sn.work_end > '2024-10-22 01:21:30')
+    )
+    AND ap.approver = '4ddcb837db78d41003ee4dc2ba9619be'
+LIMIT 300;
