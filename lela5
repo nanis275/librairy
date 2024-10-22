@@ -66,3 +66,44 @@ Sub CopyEmailBodyToExcel()
 
     MsgBox "Le contenu a été collé dans Excel."
 End Sub
+
+
+
+
+
+Sub AddApprovalButtons()
+    Dim ws As Worksheet
+    Dim lastRow As Long
+    Dim lastCol As Long
+    Dim rngTable As Range
+    Dim btn As Object
+    Dim i As Long
+
+    ' Définir la feuille active
+    Set ws = ActiveSheet
+
+    ' Trouver la dernière ligne et la dernière colonne du tableau (en supposant qu'il commence à A1)
+    lastRow = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row
+    lastCol = ws.Cells(1, ws.Columns.Count).End(xlToLeft).Column
+
+    ' Boucle à travers chaque ligne du tableau pour ajouter un bouton "Approval"
+    For i = 2 To lastRow ' Suppose que la première ligne est l'en-tête
+        ' Supprimer les anciens boutons (facultatif)
+        On Error Resume Next
+        ws.Buttons("ApprovalBtn" & i).Delete
+        On Error GoTo 0
+        
+        ' Ajouter un bouton pour chaque ligne
+        Set btn = ws.Buttons.Add(Cells(i, lastCol + 1).Left, Cells(i, lastCol + 1).Top, 80, 20)
+        btn.Name = "ApprovalBtn" & i
+        btn.Caption = "Approval"
+        
+        ' Assigner une macro pour le bouton
+        btn.OnAction = "'ApprovalMacro " & i & "'"
+    Next i
+End Sub
+
+' Exemple de macro pour approuver la ligne
+Sub ApprovalMacro(RowNum As Long)
+    MsgBox "Approval Button clicked for row: " & RowNum
+End Sub
