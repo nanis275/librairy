@@ -107,3 +107,20 @@ End Sub
 Sub ApprovalMacro(RowNum As Long)
     MsgBox "Approval Button clicked for row: " & RowNum
 End Sub
+
+
+
+
+Sub DeleteApprovalButtons()
+    Dim btn As Object
+    Dim ws As Worksheet
+    Set ws = ActiveSheet
+    
+    ' Boucle à travers tous les boutons de la feuille active
+    For Each btn In ws.Buttons
+        ' Si le nom du bouton commence par "btnApproval_", le supprimer
+        If Left(btn.Name, 12) = "btnApproval_" Then
+            btn.Delete
+        End If
+    Next btn
+End Sub
