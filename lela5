@@ -1,39 +1,42 @@
-Sub CopyFormattedEmailTableToExcel_WithoutActiveX()
-
-    ' Déclaration des objets Outlook
+Sub CopyEmailBodyToExcel()
+    ' Déclaration des objets Outlook et Word
     Dim objOutlook As Outlook.Application
     Dim objMail As Outlook.MailItem
-    Dim objSelection As Outlook.Selection
-    Dim oInspector As Outlook.Inspector
-    Dim wdDoc As Object ' Word.Document for the email body
+    Dim wdDoc As Object ' Word.Document pour le corps de l'email
     Dim oXLApp As Object
     Dim oXLwb As Object
     Dim oXLws As Object
-    Dim LastRow As Long
-    Dim btn As Object
 
-    ' Obtenir l'instance d'Outlook
+    ' Obtenir l'instance d'Outlook et sélectionner l'e-mail
     Set objOutlook = GetObject(, "Outlook.Application")
-    Set objSelection = objOutlook.ActiveExplorer.Selection
 
-    ' Vérifier s'il y a un e-mail sélectionné
-    If objSelection.Count = 0 Then
-        MsgBox "Veuillez sélectionner un e-mail contenant du HTML.", vbExclamation
+    If objOutlook.ActiveExplorer.Selection.Count = 0 Then
+        MsgBox "Aucun e-mail sélectionné.", vbExclamation
+        Exit Sub
+    End If
+    
+    Set objMail = objOutlook.ActiveExplorer.Selection.Item(1) ' Supposons qu'un e-mail est sélectionné
+
+    ' Vérifier que l'objet est bien un e-mail
+    If TypeName(objMail) <> "MailItem" Then
+        MsgBox "L'objet sélectionné n'est pas un e-mail.", vbExclamation
         Exit Sub
     End If
 
-    ' Extraire le premier e-mail de la sélection
-    Set objMail = objSelection.Item(1)
+    ' Ouvrir l'e-mail dans un inspecteur pour accéder au contenu
+    Set wdDoc = objMail.GetInspector.WordEditor
 
-    ' Ouvrir l'e-mail dans un inspecteur pour accéder à son contenu en tant que document Word
-    Set oInspector = objMail.GetInspector
-    Set wdDoc = oInspector.WordEditor ' Convertir le contenu en un document Word
+    ' Vérifier que wdDoc est bien un document Word
+    If TypeName(wdDoc) <> "Document" Then
+        MsgBox "Le corps de l'e-mail n'est pas un document Word.", vbExclamation
+        Exit Sub
+    End If
 
-    ' Sélectionner tout le contenu de l'e-mail
+    ' Sélectionner et copier le contenu de l'e-mail
     wdDoc.Content.Select
-    wdDoc.Application.Selection.Copy ' Copier le contenu sélectionné (formaté) dans le presse-papiers
+    wdDoc.Application.Selection.Copy ' Copier dans le presse-papier
 
-    ' Obtenir l'instance d'Excel ou en créer une
+    ' Ouvrir Excel et coller le contenu
     On Error Resume Next
     Set oXLApp = GetObject(, "Excel.Application")
     If oXLApp Is Nothing Then
@@ -41,7 +44,7 @@ Sub CopyFormattedEmailTableToExcel_WithoutActiveX()
     End If
     On Error GoTo 0
 
-    ' Vérifier si Excel est ouvert
+    ' Vérifier qu'Excel est ouvert
     If oXLApp Is Nothing Then
         MsgBox "Veuillez ouvrir Excel manuellement avant d'exécuter la macro.", vbExclamation
         Exit Sub
@@ -54,160 +57,12 @@ Sub CopyFormattedEmailTableToExcel_WithoutActiveX()
         Exit Sub
     End If
 
-    ' Utiliser la première feuille du classeur actif
+    ' Utiliser la première feuille de calcul
     Set oXLws = oXLwb.Sheets(1)
 
-    ' Coller le contenu formaté de l'e-mail directement dans Excel
+    ' Coller à partir de la cellule A1
+    oXLws.Range("A1").Select
     oXLws.Paste
 
-    ' Rendre Excel visible pour l'utilisateur
-    oXLApp.Visible = True
-
-    ' Pauser pour permettre le collage du contenu
-    Application.Wait Now + TimeValue("00:00:02")
-
-    ' Sélectionner la cellule A1 pour s'assurer que le collage est terminé
-    oXLws.Range("A1").Select
-
-    ' Vérification : Afficher un message pour confirmer si le collage a fonctionné
-    If oXLws.Cells(1, 1).Value = "" Then
-        MsgBox "Aucune donnée trouvée dans la cellule A1. Vérifiez si l'e-mail contient un tableau HTML.", vbExclamation
-        Exit Sub
-    End If
-
-    ' Nouvelle méthode pour trouver la dernière ligne de toute la feuille (non limitée à la colonne A)
-    LastRow = oXLws.Cells.Find("*", SearchOrder:=xlByRows, SearchDirection:=xlPrevious).Row
-
-    ' Vérification : Afficher la dernière ligne trouvée
-    MsgBox "Dernière ligne trouvée : " & LastRow, vbInformation
-
-    ' Ajouter un bouton "Approval" dans chaque ligne de la colonne B
-    Dim i As Long
-    For i = 2 To LastRow ' Commencer à la ligne 2 pour éviter l'entête
-        Set btn = oXLws.Buttons.Add(oXLws.Cells(i, 2).Left, oXLws.Cells(i, 2).Top, oXLws.Cells(i, 2).Width, oXLws.Cells(i, 2).Height)
-        With btn
-            .Caption = "Approval"
-            .OnAction = "'" & ThisWorkbook.Name & "'!ApprovalButton_Click" ' Lier à la fonction ApprovalButton_Click
-        End With
-    Next i
-
-    ' Message de confirmation
-    MsgBox "Le tableau formaté a été collé dans Excel avec succès, et des boutons d'approbation ont été ajoutés.", vbInformation
-
-End Sub
-
-' Macro appelée lorsque le bouton "Approval" est cliqué
-Sub ApprovalButton_Click()
-    MsgBox "Le bouton d'approbation a été cliqué pour cette ligne.", vbInformation
-End Sub
-
-
-
-
-Sub CopyFormattedEmailTableToExcel_WithoutActiveX()
-
-    ' Déclaration des objets Outlook
-    Dim objOutlook As Outlook.Application
-    Dim objMail As Outlook.MailItem
-    Dim objSelection As Outlook.Selection
-    Dim oInspector As Outlook.Inspector
-    Dim wdDoc As Object ' Word.Document for the email body
-    Dim oXLApp As Object
-    Dim oXLwb As Object
-    Dim oXLws As Object
-    Dim LastRow As Long
-    Dim btn As Object
-
-    ' Obtenir l'instance d'Outlook
-    Set objOutlook = GetObject(, "Outlook.Application")
-    Set objSelection = objOutlook.ActiveExplorer.Selection
-
-    ' Vérifier s'il y a un e-mail sélectionné
-    If objSelection.Count = 0 Then
-        MsgBox "Veuillez sélectionner un e-mail contenant du HTML.", vbExclamation
-        Exit Sub
-    End If
-
-    ' Extraire le premier e-mail de la sélection
-    Set objMail = objSelection.Item(1)
-
-    ' Ouvrir l'e-mail dans un inspecteur pour accéder à son contenu en tant que document Word
-    Set oInspector = objMail.GetInspector
-    Set wdDoc = oInspector.WordEditor ' Convertir le contenu en un document Word
-
-    ' Sélectionner tout le contenu de l'e-mail
-    wdDoc.Content.Select
-    wdDoc.Application.Selection.Copy ' Copier le contenu sélectionné (formaté) dans le presse-papiers
-
-    ' Obtenir l'instance d'Excel ou en créer une
-    On Error Resume Next
-    Set oXLApp = GetObject(, "Excel.Application")
-    If oXLApp Is Nothing Then
-        Set oXLApp = CreateObject("Excel.Application")
-    End If
-    On Error GoTo 0
-
-    ' Vérifier si Excel est ouvert
-    If oXLApp Is Nothing Then
-        MsgBox "Veuillez ouvrir Excel manuellement avant d'exécuter la macro.", vbExclamation
-        Exit Sub
-    End If
-
-    ' Utiliser le classeur actif
-    Set oXLwb = oXLApp.ActiveWorkbook
-    If oXLwb Is Nothing Then
-        MsgBox "Aucun classeur n'est ouvert dans Excel.", vbExclamation
-        Exit Sub
-    End If
-
-    ' Utiliser la première feuille du classeur actif
-    Set oXLws = oXLwb.Sheets(1)
-
-    ' Coller le contenu formaté de l'e-mail directement dans Excel
-    oXLws.Paste
-
-    ' Rendre Excel visible pour l'utilisateur
-    oXLApp.Visible = True
-
-    ' Pauser pour permettre le collage du contenu
-    Application.Wait Now + TimeValue("00:00:02")
-
-    ' Sélectionner la cellule A1 pour s'assurer que le collage est terminé
-    oXLws.Range("A1").Select
-
-    ' Nouvelle méthode pour trouver la dernière ligne de toute la feuille (non limitée à la colonne A)
-    LastRow = oXLws.Cells.Find("*", SearchOrder:=xlByRows, SearchDirection:=xlPrevious).Row
-
-    ' Vérification : Afficher la dernière ligne trouvée
-    MsgBox "Dernière ligne trouvée : " & LastRow, vbInformation
-
-    ' Ajouter un bouton de formulaire "Approval" dans chaque ligne de la colonne B
-    Dim i As Long
-    Dim btnLeft As Double
-    Dim btnTop As Double
-    Dim btnHeight As Double
-    Dim btnWidth As Double
-    For i = 2 To LastRow ' Commencer à la ligne 2 pour éviter l'entête
-        ' Calculer les dimensions du bouton à partir de la cellule de la ligne i, colonne B
-        btnLeft = oXLws.Cells(i, 2).Left
-        btnTop = oXLws.Cells(i, 2).Top
-        btnHeight = oXLws.Cells(i, 2).Height
-        btnWidth = oXLws.Cells(i, 2).Width
-
-        ' Ajouter un bouton de formulaire à la feuille
-        Set btn = oXLws.Buttons.Add(btnLeft, btnTop, btnWidth, btnHeight)
-        With btn
-            .OnAction = "ApprovalButton_Click" ' Associer le bouton à la macro d'approbation
-            .Caption = "Approval" ' Légender le bouton
-        End With
-    Next i
-
-    ' Message de confirmation
-    MsgBox "Le tableau formaté a été collé dans Excel avec succès, et des boutons d'approbation ont été ajoutés.", vbInformation
-
-End Sub
-
-' Macro appelée lorsque le bouton "Approval" est cliqué
-Sub ApprovalButton_Click()
-    MsgBox "Le bouton d'approbation a été cliqué pour cette ligne.", vbInformation
+    MsgBox "Le contenu a été collé dans Excel."
 End Sub
