@@ -1,4 +1,4 @@
-Sub CopyEmailBodyToExcelWithPause()
+Sub CopyEmailBodyToExcel()
     ' Déclaration des objets Outlook et Word
     Dim objOutlook As Outlook.Application
     Dim objMail As Outlook.MailItem
@@ -15,7 +15,13 @@ Sub CopyEmailBodyToExcelWithPause()
         Exit Sub
     End If
     
-    Set objMail = objOutlook.ActiveExplorer.Selection.Item(1)
+    Set objMail = objOutlook.ActiveExplorer.Selection.Item(1) ' Supposons qu'un e-mail est sélectionné
+
+    ' Vérifier que l'objet est bien un e-mail
+    If TypeName(objMail) <> "MailItem" Then
+        MsgBox "L'objet sélectionné n'est pas un e-mail.", vbExclamation
+        Exit Sub
+    End If
 
     ' Ouvrir l'e-mail dans un inspecteur pour accéder au contenu
     Set wdDoc = objMail.GetInspector.WordEditor
@@ -44,9 +50,6 @@ Sub CopyEmailBodyToExcelWithPause()
         Exit Sub
     End If
 
-    ' Rendre Excel visible
-    oXLApp.Visible = True
-
     ' Utiliser le classeur actif
     Set oXLwb = oXLApp.ActiveWorkbook
     If oXLwb Is Nothing Then
@@ -57,11 +60,9 @@ Sub CopyEmailBodyToExcelWithPause()
     ' Utiliser la première feuille de calcul
     Set oXLws = oXLwb.Sheets(1)
 
-    ' Attendre une seconde avant de coller (pour éviter tout problème de timing)
-    Application.Wait (Now + TimeValue("00:00:01"))
-
-    ' Coller à partir de la cellule A1 en utilisant PasteSpecial
-    oXLws.Range("A1").PasteSpecial Paste:=xlPasteAll
+    ' Coller à partir de la cellule A1
+    oXLws.Range("A1").Select
+    oXLws.Paste
 
     MsgBox "Le contenu a été collé dans Excel."
 End Sub
