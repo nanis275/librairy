@@ -210,3 +210,71 @@ Sub DeleteApprovalButtonsByCaption()
         End If
     Next btn
 End Sub
+
+
+
+
+
+Sub AddApprovalButtonsForMergedOrExtendedCells()
+    Dim ws As Worksheet
+    Dim lastRow As Long
+    Dim cell As Range
+    Dim btn As Object
+    Dim btnLeft As Double
+    Dim btnTop As Double
+    Dim mergeArea As Range
+
+    ' Définir la feuille active
+    Set ws = ActiveSheet
+
+    ' Trouver la dernière ligne utilisée dans la colonne A
+    lastRow = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row
+
+    ' Parcourir chaque cellule de la colonne A, de la ligne 2 à la dernière ligne
+    For Each cell In ws.Range("A2:A" & lastRow)
+        ' Vérifier si la cellule fait partie d'une plage fusionnée
+        If Not cell.MergeArea Is Nothing Then
+            ' Si c'est la première cellule de la plage fusionnée
+            If cell.Address = cell.MergeArea.Cells(1, 1).Address Then
+                ' Positionner le bouton à droite de la cellule fusionnée
+                btnLeft = cell.Offset(0, 1).Left + cell.Offset(0, 1).Width + 10
+                btnTop = cell.Top
+
+                ' Supprimer tout bouton existant sur cette ligne avant d'en créer un nouveau
+                On Error Resume Next
+                ws.Buttons("btnApproval_" & cell.Row).Delete
+                On Error GoTo 0
+                
+                ' Créer le bouton "Approval" pour la première cellule fusionnée
+                Set btn = ws.Buttons.Add(btnLeft, btnTop, 100, 20)
+                btn.Name = "btnApproval_" & cell.Row
+                btn.Caption = "Approval"
+                
+                ' Assigner une macro au bouton (facultatif)
+                btn.OnAction = "'ApprovalAction " & cell.Row & "'"
+            End If
+        Else
+            ' Si la cellule n'est pas fusionnée, ajouter un bouton pour cette cellule
+            btnLeft = cell.Offset(0, 1).Left + cell.Offset(0, 1).Width + 10
+            btnTop = cell.Top
+            
+            ' Supprimer tout bouton existant sur cette ligne avant d'en créer un nouveau
+            On Error Resume Next
+            ws.Buttons("btnApproval_" & cell.Row).Delete
+            On Error GoTo 0
+            
+            ' Créer le bouton "Approval"
+            Set btn = ws.Buttons.Add(btnLeft, btnTop, 100, 20)
+            btn.Name = "btnApproval_" & cell.Row
+            btn.Caption = "Approval"
+            
+            ' Assigner une macro au bouton (facultatif)
+            btn.OnAction = "'ApprovalAction " & cell.Row & "'"
+        End If
+    Next cell
+End Sub
+
+' Exemple de macro appelée par les boutons
+Sub ApprovalAction(rowNum As Long)
+    MsgBox "Approval button clicked for row " & rowNum
+End Sub
