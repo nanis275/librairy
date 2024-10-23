@@ -361,7 +361,6 @@ Sub AddApprovalButtonsForMergedOrExtendedCells()
     Dim btnTop As Double
     Dim btnWidth As Double
     Dim btnHeight As Double
-    Dim mergeArea As Range
 
     ' Définir la feuille active
     Set ws = ActiveSheet
@@ -379,14 +378,14 @@ Sub AddApprovalButtonsForMergedOrExtendedCells()
                 btnLeft = ws.Cells(cell.Row, 15).Left ' Colonne O est la 15e colonne
                 btnTop = cell.Top
                 
-                ' Adapter la taille du bouton à la hauteur de la cellule fusionnée
-                btnHeight = cell.MergeArea.Height
-                btnWidth = ws.Cells(cell.Row, 15).Width ' Largeur de la colonne O
-
                 ' Supprimer tout bouton existant sur cette ligne avant d'en créer un nouveau
                 On Error Resume Next
                 ws.Buttons("btnApproval_" & cell.Row).Delete
                 On Error GoTo 0
+                
+                ' Adapter la taille du bouton à la hauteur de la cellule fusionnée
+                btnHeight = cell.MergeArea.Height
+                btnWidth = ws.Cells(cell.Row, 15).Width + 30 ' Ajouter 30 pixels à la largeur de la colonne O
                 
                 ' Créer le bouton "Approval" pour la première cellule fusionnée avec la taille de la cellule
                 Set btn = ws.Buttons.Add(btnLeft, btnTop, btnWidth, btnHeight)
@@ -397,16 +396,18 @@ Sub AddApprovalButtonsForMergedOrExtendedCells()
                 btn.OnAction = "'ApprovalAction " & cell.Row & "'"
             End If
         Else
-            ' Si la cellule n'est pas fusionnée, ajuster le bouton à la taille de la cellule
+            ' Si la cellule n'est pas fusionnée, ajouter un bouton pour cette cellule
             btnLeft = ws.Cells(cell.Row, 15).Left ' Colonne O est la 15e colonne
             btnTop = cell.Top
-            btnHeight = cell.Height ' Hauteur de la cellule
-            btnWidth = ws.Cells(cell.Row, 15).Width ' Largeur de la colonne O
             
             ' Supprimer tout bouton existant sur cette ligne avant d'en créer un nouveau
             On Error Resume Next
             ws.Buttons("btnApproval_" & cell.Row).Delete
             On Error GoTo 0
+            
+            ' Adapter la taille du bouton à la hauteur de la cellule
+            btnHeight = cell.Height ' Hauteur de la cellule
+            btnWidth = ws.Cells(cell.Row, 15).Width + 30 ' Ajouter 30 pixels à la largeur de la colonne O
             
             ' Créer le bouton "Approval"
             Set btn = ws.Buttons.Add(btnLeft, btnTop, btnWidth, btnHeight)
@@ -423,4 +424,5 @@ End Sub
 Sub ApprovalAction(rowNum As Long)
     MsgBox "Approval button clicked for row " & rowNum
 End Sub
+
 
